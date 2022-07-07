@@ -39,6 +39,18 @@ class Asset {
         repayment: Money(amount: 0));
   }
 
+  factory Asset.fromMap(Map map) {
+    return Asset(
+      id: map['id'] as int,
+      name: AssetName(assetName: map['name']),
+      imageUrl: map['imageUrl'] as String,
+      cost: Money(amount: map['cost']),
+      depreciationPriodOfMonth: map['depreciationPriodOfMonth'] as int,
+      purchaseDate: map['purchaseData'] as DateTime,
+      repayment: Money(amount: map['repayment']),
+    );
+  }
+
   int daysUntillLimit() {
     DateTime finalDate =
         purchaseDate.add(Duration(days: depreciationPriodOfMonth));
@@ -111,20 +123,9 @@ class AssetList {
   List<Asset?> assetList;
 
   AssetList add(
-    int id,
-    AssetName name,
-    String url,
-    Money cost,
-    int priod,
+    Asset asset,
   ) {
-    assetList.add(Asset(
-        id: id,
-        name: name,
-        imageUrl: url,
-        cost: cost,
-        depreciationPriodOfMonth: priod,
-        purchaseDate: DateTime.now(),
-        repayment: Money(amount: 0)));
+    assetList.add(asset);
     return AssetList(assetList);
   }
 

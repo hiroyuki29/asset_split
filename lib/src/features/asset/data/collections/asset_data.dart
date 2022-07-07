@@ -12,4 +12,16 @@ class AssetData {
   late int depreciationPriodOfMonth;
   late DateTime purchaseDate;
   late int repayment;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'imageUrl': imageUrl,
+      'cost': cost,
+      'depreciationPriodOfMonth': depreciationPriodOfMonth,
+      'purchaseDate': purchaseDate,
+      'repayment': repayment,
+    };
+  }
 }
