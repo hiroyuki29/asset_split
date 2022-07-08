@@ -15,17 +15,17 @@ extension GetAssetDataCollection on Isar {
 const AssetDataSchema = CollectionSchema(
   name: 'AssetData',
   schema:
-      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Long"},{"name":"depreciationPriodOfMonth","type":"Long"},{"name":"imageUrl","type":"String"},{"name":"name","type":"String"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Long"},{"name":"depreciationPriodOfMonth","type":"Long"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'cost': 0,
     'depreciationPriodOfMonth': 1,
-    'imageUrl': 2,
+    'image': 2,
     'name': 3,
     'purchaseDate': 4,
     'repayment': 5
   },
-  listProperties: {},
+  listProperties: {'image'},
   indexIds: {},
   indexValueTypes: {},
   linkIds: {},
@@ -68,31 +68,31 @@ void _assetDataSerializeNative(
     AdapterAlloc alloc) {
   var dynamicSize = 0;
   final value0 = object.cost;
-  final cost = value0;
+  final _cost = value0;
   final value1 = object.depreciationPriodOfMonth;
-  final depreciationPriodOfMonth = value1;
-  final value2 = object.imageUrl;
-  final imageUrl = IsarBinaryWriter.utf8Encoder.convert(value2);
-  dynamicSize += (imageUrl.length) as int;
+  final _depreciationPriodOfMonth = value1;
+  final value2 = object.image;
+  dynamicSize += (value2.length) * 1;
+  final _image = value2;
   final value3 = object.name;
-  final name = IsarBinaryWriter.utf8Encoder.convert(value3);
-  dynamicSize += (name.length) as int;
+  final _name = IsarBinaryWriter.utf8Encoder.convert(value3);
+  dynamicSize += (_name.length) as int;
   final value4 = object.purchaseDate;
-  final purchaseDate = value4;
+  final _purchaseDate = value4;
   final value5 = object.repayment;
-  final repayment = value5;
+  final _repayment = value5;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], cost);
-  writer.writeLong(offsets[1], depreciationPriodOfMonth);
-  writer.writeBytes(offsets[2], imageUrl);
-  writer.writeBytes(offsets[3], name);
-  writer.writeDateTime(offsets[4], purchaseDate);
-  writer.writeLong(offsets[5], repayment);
+  writer.writeLong(offsets[0], _cost);
+  writer.writeLong(offsets[1], _depreciationPriodOfMonth);
+  writer.writeBytes(offsets[2], _image);
+  writer.writeBytes(offsets[3], _name);
+  writer.writeDateTime(offsets[4], _purchaseDate);
+  writer.writeLong(offsets[5], _repayment);
 }
 
 AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
@@ -101,7 +101,7 @@ AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
   object.cost = reader.readLong(offsets[0]);
   object.depreciationPriodOfMonth = reader.readLong(offsets[1]);
   object.id = id;
-  object.imageUrl = reader.readString(offsets[2]);
+  object.image = reader.readBytes(offsets[2]);
   object.name = reader.readString(offsets[3]);
   object.purchaseDate = reader.readDateTime(offsets[4]);
   object.repayment = reader.readLong(offsets[5]);
@@ -118,7 +118,7 @@ P _assetDataDeserializePropNative<P>(
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readBytes(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
@@ -137,7 +137,7 @@ dynamic _assetDataSerializeWeb(
   IsarNative.jsObjectSet(
       jsObj, 'depreciationPriodOfMonth', object.depreciationPriodOfMonth);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'imageUrl', object.imageUrl);
+  IsarNative.jsObjectSet(jsObj, 'image', object.image);
   IsarNative.jsObjectSet(jsObj, 'name', object.name);
   IsarNative.jsObjectSet(jsObj, 'purchaseDate',
       object.purchaseDate.toUtc().millisecondsSinceEpoch);
@@ -154,7 +154,7 @@ AssetData _assetDataDeserializeWeb(
       IsarNative.jsObjectGet(jsObj, 'depreciationPriodOfMonth') ??
           double.negativeInfinity;
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-  object.imageUrl = IsarNative.jsObjectGet(jsObj, 'imageUrl') ?? '';
+  object.image = IsarNative.jsObjectGet(jsObj, 'image') ?? Uint8List(0);
   object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
   object.purchaseDate = IsarNative.jsObjectGet(jsObj, 'purchaseDate') != null
       ? DateTime.fromMillisecondsSinceEpoch(
@@ -178,8 +178,8 @@ P _assetDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
-    case 'imageUrl':
-      return (IsarNative.jsObjectGet(jsObj, 'imageUrl') ?? '') as P;
+    case 'image':
+      return (IsarNative.jsObjectGet(jsObj, 'image') ?? Uint8List(0)) as P;
     case 'name':
       return (IsarNative.jsObjectGet(jsObj, 'name') ?? '') as P;
     case 'purchaseDate':
@@ -408,109 +408,6 @@ extension AssetDataQueryFilter
       includeLower: includeLower,
       upper: upper,
       includeUpper: includeUpper,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'imageUrl',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlGreaterThan(
-    String value, {
-    bool caseSensitive = true,
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'imageUrl',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlLessThan(
-    String value, {
-    bool caseSensitive = true,
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'imageUrl',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlBetween(
-    String lower,
-    String upper, {
-    bool caseSensitive = true,
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'imageUrl',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'imageUrl',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'imageUrl',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'imageUrl',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> imageUrlMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'imageUrl',
-      value: pattern,
-      caseSensitive: caseSensitive,
     ));
   }
 
@@ -748,14 +645,6 @@ extension AssetDataQueryWhereSortBy
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByImageUrl() {
-    return addSortByInternal('imageUrl', Sort.asc);
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByImageUrlDesc() {
-    return addSortByInternal('imageUrl', Sort.desc);
-  }
-
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByName() {
     return addSortByInternal('name', Sort.asc);
   }
@@ -809,14 +698,6 @@ extension AssetDataQueryWhereSortThenBy
     return addSortByInternal('id', Sort.desc);
   }
 
-  QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByImageUrl() {
-    return addSortByInternal('imageUrl', Sort.asc);
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByImageUrlDesc() {
-    return addSortByInternal('imageUrl', Sort.desc);
-  }
-
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByName() {
     return addSortByInternal('name', Sort.asc);
   }
@@ -857,11 +738,6 @@ extension AssetDataQueryWhereDistinct
     return addDistinctByInternal('id');
   }
 
-  QueryBuilder<AssetData, AssetData, QDistinct> distinctByImageUrl(
-      {bool caseSensitive = true}) {
-    return addDistinctByInternal('imageUrl', caseSensitive: caseSensitive);
-  }
-
   QueryBuilder<AssetData, AssetData, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('name', caseSensitive: caseSensitive);
@@ -891,8 +767,8 @@ extension AssetDataQueryProperty
     return addPropertyNameInternal('id');
   }
 
-  QueryBuilder<AssetData, String, QQueryOperations> imageUrlProperty() {
-    return addPropertyNameInternal('imageUrl');
+  QueryBuilder<AssetData, Uint8List, QQueryOperations> imageProperty() {
+    return addPropertyNameInternal('image');
   }
 
   QueryBuilder<AssetData, String, QQueryOperations> nameProperty() {

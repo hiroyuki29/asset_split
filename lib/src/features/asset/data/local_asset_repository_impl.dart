@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
@@ -60,7 +61,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
   Future<void> setAsset(Asset asset) async {
     final newAssetData = AssetData()
       ..name = asset.name.assetName
-      ..imageUrl = asset.imageUrl
+      ..image = asset.image
       ..cost = asset.cost.amount
       ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth
       ..purchaseDate = asset.purchaseDate
@@ -77,7 +78,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
 
   @override
   Future<void> removeAsset(int assetId) async {
-    isar.writeTxn((isar) async {
+    await isar.writeTxn((isar) async {
       return isar.assetDatas.delete(assetId);
     });
   }
@@ -86,7 +87,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
   Future<void> updateAsset({
     required int id,
     required String name,
-    required String imageUrl,
+    required Uint8List image,
     required int cost,
     required int priod,
   }) async {
@@ -99,7 +100,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
     }
     assetData
       ..name = name
-      ..imageUrl = imageUrl
+      ..image = image
       ..cost = cost
       ..depreciationPriodOfMonth = priod;
 

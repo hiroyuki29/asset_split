@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'model/asset.dart';
 
 abstract class LocalAssetRepository {
@@ -8,7 +10,7 @@ abstract class LocalAssetRepository {
   Future<void> updateAsset({
     required int id,
     required String name,
-    required String imageUrl,
+    required Uint8List image,
     required int cost,
     required int priod,
   });

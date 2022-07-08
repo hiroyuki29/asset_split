@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:typed_data';
+
 import 'package:asset_split/src/features/user/domain/value/money_amount.dart';
 
 import '../../data/collections/asset_data.dart';
@@ -8,7 +10,7 @@ class Asset {
   Asset({
     required this.id,
     required this.name,
-    required this.imageUrl,
+    required this.image,
     required this.cost,
     required this.depreciationPriodOfMonth,
     required this.purchaseDate,
@@ -17,7 +19,7 @@ class Asset {
 
   final int id;
   final AssetName name;
-  final String imageUrl;
+  final Uint8List image;
   final Money cost;
   final int depreciationPriodOfMonth;
   final DateTime purchaseDate;
@@ -25,14 +27,14 @@ class Asset {
 
   factory Asset.initCreate({
     required AssetName name,
-    required String imageUrl,
+    required Uint8List image,
     required Money cost,
     required int priod,
   }) {
     return Asset(
         id: 0, //Isar保存時に採番するのでここでは０とする
         name: name,
-        imageUrl: imageUrl,
+        image: image,
         cost: cost,
         depreciationPriodOfMonth: priod,
         purchaseDate: DateTime.now(),
@@ -43,7 +45,7 @@ class Asset {
     return Asset(
       id: data.id,
       name: AssetName(assetName: data.name),
-      imageUrl: data.imageUrl,
+      image: data.image,
       cost: Money(amount: data.cost),
       depreciationPriodOfMonth: data.depreciationPriodOfMonth,
       purchaseDate: data.purchaseDate,
@@ -68,7 +70,7 @@ class Asset {
   Asset copyWith({
     int? id,
     AssetName? name,
-    String? imageUrl,
+    Uint8List? image,
     Money? cost,
     int? depreciationPriodOfMonth,
     DateTime? purchaseDate,
@@ -77,7 +79,7 @@ class Asset {
     return Asset(
       id: id ?? this.id,
       name: name ?? this.name,
-      imageUrl: imageUrl ?? this.imageUrl,
+      image: image ?? this.image,
       cost: cost ?? this.cost,
       depreciationPriodOfMonth:
           depreciationPriodOfMonth ?? this.depreciationPriodOfMonth,
@@ -88,7 +90,7 @@ class Asset {
 
   @override
   String toString() {
-    return 'Asset(id: $id, name: $name, imageUrl: $imageUrl, cost: $cost, depreciationPriodOfMonth: $depreciationPriodOfMonth, purchaseDate: $purchaseDate, repayment: $repayment)';
+    return 'Asset(id: $id, name: $name, imageUrl: $image, cost: $cost, depreciationPriodOfMonth: $depreciationPriodOfMonth, purchaseDate: $purchaseDate, repayment: $repayment)';
   }
 
   @override
@@ -98,7 +100,7 @@ class Asset {
     return other is Asset &&
         other.id == id &&
         other.name == name &&
-        other.imageUrl == imageUrl &&
+        other.image == image &&
         other.cost == cost &&
         other.depreciationPriodOfMonth == depreciationPriodOfMonth &&
         other.purchaseDate == purchaseDate &&
@@ -109,7 +111,7 @@ class Asset {
   int get hashCode {
     return id.hashCode ^
         name.hashCode ^
-        imageUrl.hashCode ^
+        image.hashCode ^
         cost.hashCode ^
         depreciationPriodOfMonth.hashCode ^
         purchaseDate.hashCode ^

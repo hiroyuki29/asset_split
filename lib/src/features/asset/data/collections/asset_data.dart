@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:isar/isar.dart';
 
 part 'asset_data.g.dart';
@@ -7,7 +9,7 @@ class AssetData {
   int id = Isar.autoIncrement;
 
   late String name;
-  late String imageUrl;
+  late Uint8List image;
   late int cost;
   late int depreciationPriodOfMonth;
   late DateTime purchaseDate;
@@ -17,7 +19,7 @@ class AssetData {
     return {
       'id': id,
       'name': name,
-      'imageUrl': imageUrl,
+      'image': image,
       'cost': cost,
       'depreciationPriodOfMonth': depreciationPriodOfMonth,
       'purchaseDate': purchaseDate,

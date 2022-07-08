@@ -1,16 +1,24 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../constants.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../domain/value/asset_name.dart';
 
 class AddNewAssetScreen extends ConsumerWidget {
-  int categoryId = 1;
-  String newItemName = '';
-  String name = 'デフォルト';
-  int cost = 1;
+  late String name;
+  late Uint8List image;
+  late int cost;
+
+  AddNewAssetScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,6 +69,33 @@ class AddNewAssetScreen extends ConsumerWidget {
             const SizedBox(
               height: 10,
             ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.lightBlueAccent,
+              ),
+              onPressed: () async {
+                try {
+                  ImagePicker? imagePicker = ImagePicker();
+                  final XFile? pickedFile =
+                      await imagePicker.pickImage(source: ImageSource.gallery);
+                  final path = (await getApplicationDocumentsDirectory()).path;
+                  final String fileName = basename(pickedFile!.path);
+                  final String imagePath = '$path/$fileName';
+                  File imageFile = File(imagePath);
+                  await imageFile.writeAsBytes(await pickedFile.readAsBytes());
+                  ByteData byte = await rootBundle.load(imagePath);
+                  image = byte.buffer.asUint8List();
+                } catch (e) {
+                  print(e);
+                }
+              },
+              child: const Text(
+                'image選択',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -69,12 +104,16 @@ class AddNewAssetScreen extends ConsumerWidget {
                 backgroundColor: Colors.lightBlueAccent,
               ),
               onPressed: () async {
-                ref.read(assetStateProvider.notifier).add(
-                      name: AssetName(assetName: name),
-                      imageUrl: 'aaa',
-                      cost: Money(amount: cost),
-                      priod: 1,
-                    );
+                try {
+                  ref.read(assetStateProvider.notifier).add(
+                        name: AssetName(assetName: name),
+                        image: image,
+                        cost: Money(amount: cost),
+                        priod: 1,
+                      );
+                } catch (e) {
+                  print(e);
+                }
               },
               child: const Text(
                 'Add',

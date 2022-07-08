@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../user/domain/value/money_amount.dart';
@@ -33,14 +35,14 @@ class AssetUseCase {
   Future<AssetList> update({
     required int id,
     required AssetName name,
-    required String imageUrl,
+    required Uint8List image,
     required Money cost,
     required int priod,
   }) async {
     await localAssetRepository.updateAsset(
         id: id,
         name: name.assetName,
-        imageUrl: imageUrl,
+        image: image,
         cost: cost.amount,
         priod: priod);
     return localAssetRepository.fetchAseets();

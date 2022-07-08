@@ -52,9 +52,16 @@ class AssetHomeScreen extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         final asset = assets.list[index];
                         return ListTile(
-                            title: Text(
-                          asset!.name.assetName,
-                        ));
+                          trailing: Image.memory(asset!.image),
+                          title: Text(
+                            asset.name.assetName,
+                          ),
+                          onTap: () {
+                            ref
+                                .read(assetStateProvider.notifier)
+                                .remove(asset.id);
+                          },
+                        );
                       }),
             ),
           ),
