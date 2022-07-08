@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:asset_split/src/features/user/domain/value/money_amount.dart';
 
+import '../../data/collections/asset_data.dart';
 import '../value/asset_name.dart';
 
 class Asset {
@@ -22,12 +23,12 @@ class Asset {
   final DateTime purchaseDate;
   final Money repayment;
 
-  factory Asset.initCreate(
-    AssetName name,
-    String imageUrl,
-    Money cost,
-    int priod,
-  ) {
+  factory Asset.initCreate({
+    required AssetName name,
+    required String imageUrl,
+    required Money cost,
+    required int priod,
+  }) {
     return Asset(
         id: 0, //Isar保存時に採番するのでここでは０とする
         name: name,
@@ -38,15 +39,15 @@ class Asset {
         repayment: Money(amount: 0));
   }
 
-  factory Asset.fromMap(Map map) {
+  factory Asset.fromAssetData(AssetData data) {
     return Asset(
-      id: map['id'] as int,
-      name: AssetName(assetName: map['name']),
-      imageUrl: map['imageUrl'] as String,
-      cost: Money(amount: map['cost']),
-      depreciationPriodOfMonth: map['depreciationPriodOfMonth'] as int,
-      purchaseDate: map['purchaseData'] as DateTime,
-      repayment: Money(amount: map['repayment']),
+      id: data.id,
+      name: AssetName(assetName: data.name),
+      imageUrl: data.imageUrl,
+      cost: Money(amount: data.cost),
+      depreciationPriodOfMonth: data.depreciationPriodOfMonth,
+      purchaseDate: data.purchaseDate,
+      repayment: Money(amount: data.repayment),
     );
   }
 
@@ -117,27 +118,27 @@ class Asset {
 }
 
 class AssetList {
-  AssetList(this.assetList);
+  AssetList(this.list);
 
-  List<Asset?> assetList;
+  List<Asset?> list;
 
   AssetList add(
     Asset asset,
   ) {
-    assetList.add(asset);
-    return AssetList(assetList);
+    list.add(asset);
+    return AssetList(list);
   }
 
   void remove(int id) {
-    if (assetList.isNotEmpty) {
-      assetList.where((asset) => asset!.id != id).toList();
+    if (list.isNotEmpty) {
+      list.where((asset) => asset!.id != id).toList();
     }
   }
 
   Money sumRepaymentByDay() {
     Money sumAllRepaymentByDay = Money(amount: 0);
-    if (assetList.isNotEmpty) {
-      for (var asset in assetList) {
+    if (list.isNotEmpty) {
+      for (var asset in list) {
         sumAllRepaymentByDay.add(asset!.repaymentByDayForAsset());
       }
     }
@@ -146,9 +147,9 @@ class AssetList {
 
   void reflectRepaymentForEachAsset(Money allRepayment) {
     Money baseAmount = sumRepaymentByDay();
-    if (assetList.isNotEmpty) {
-      assetList = [
-        for (final asset in assetList)
+    if (list.isNotEmpty) {
+      list = [
+        for (final asset in list)
           asset?.copyWith(
               repayment: asset.repayment.decrease(allRepayment
                   .multi(asset.repaymentByDayForAsset().ratio(baseAmount))))

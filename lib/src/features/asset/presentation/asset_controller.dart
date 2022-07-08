@@ -6,31 +6,52 @@ import '../use_case/asset_use_case.dart';
 
 //責務：
 class AssetState extends StateNotifier<AsyncValue<AssetList>> {
-  AssetState({required this.assetUseCase}) : super(AsyncData(AssetList([])));
+  AssetState({required this.assetUseCase}) : super(AsyncData(AssetList([]))) {
+    _fetchAssets();
+  }
 
   final AssetUseCase assetUseCase;
 
-  void add(
-    int id,
-    AssetName name,
-    String imageUrl,
-    Money cost,
-    int priod,
-  ) async {
-    Asset newAsset = Asset.initCreate(id, name, imageUrl, cost, priod);
-    // assetUseCase.add(newAsset);
-    // List<Asset?> list = state.assetList;
-    // list.add(newAsset);
-    // state = AssetList(list);
+  void _fetchAssets() async {
     state = const AsyncLoading();
+    state = await AsyncValue.guard(() => assetUseCase.fetchAssets());
+  }
+
+  void add({
+    required AssetName name,
+    required String imageUrl,
+    required Money cost,
+    required int priod,
+  }) async {
+    state = const AsyncLoading();
+    Asset newAsset = Asset.initCreate(
+      name: name,
+      imageUrl: imageUrl,
+      cost: cost,
+      priod: priod,
+    );
     state = await AsyncValue.guard(() => assetUseCase.add(newAsset));
   }
 
-  // void remove(int id) {
-  //   List<Asset?> list = state.assetList;
-  //   if (list.isNotEmpty) {
-  //     list.where((asset) => asset!.id != id).toList();
-  //   }
-  //   state = AssetList(list);
-  // }
+  void remove(int id) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => assetUseCase.remove(id));
+  }
+
+  void update({
+    required Asset asset,
+    AssetName? name,
+    String? imageUrl,
+    Money? cost,
+    int? priod,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => assetUseCase.update(
+          id: asset.id,
+          name: name ?? asset.name,
+          imageUrl: imageUrl ?? asset.imageUrl,
+          cost: cost ?? asset.cost,
+          priod: priod ?? asset.depreciationPriodOfMonth,
+        ));
+  }
 }
