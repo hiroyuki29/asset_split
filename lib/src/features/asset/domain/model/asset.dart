@@ -23,14 +23,13 @@ class Asset {
   final Money repayment;
 
   factory Asset.initCreate(
-    int id,
     AssetName name,
     String imageUrl,
     Money cost,
     int priod,
   ) {
     return Asset(
-        id: id,
+        id: 0, //Isar保存時に採番するのでここでは０とする
         name: name,
         imageUrl: imageUrl,
         cost: cost,

@@ -22,9 +22,17 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
   }
 
   @override
-  Future<void> setAssets(AssetList assetList) {
-    // TODO: implement setAssets
-    throw UnimplementedError();
+  Future<void> setAsset(Asset asset) async {
+    final newAssetData = AssetData()
+      ..name = asset.name as String
+      ..imageUrl = asset.imageUrl
+      ..cost = asset.cost as int
+      ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth
+      ..purchaseDate = asset.purchaseDate
+      ..repayment = asset.repayment as int;
+    await isar.writeTxn((isar) async {
+      await isar.assetDatas.put(newAssetData);
+    });
   }
 
   @override

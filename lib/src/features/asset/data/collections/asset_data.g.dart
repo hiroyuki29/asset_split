@@ -68,31 +68,31 @@ void _assetDataSerializeNative(
     AdapterAlloc alloc) {
   var dynamicSize = 0;
   final value0 = object.cost;
-  final _cost = value0;
+  final cost = value0;
   final value1 = object.depreciationPriodOfMonth;
-  final _depreciationPriodOfMonth = value1;
+  final depreciationPriodOfMonth = value1;
   final value2 = object.imageUrl;
-  final _imageUrl = IsarBinaryWriter.utf8Encoder.convert(value2);
-  dynamicSize += (_imageUrl.length) as int;
+  final imageUrl = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (imageUrl.length) as int;
   final value3 = object.name;
-  final _name = IsarBinaryWriter.utf8Encoder.convert(value3);
-  dynamicSize += (_name.length) as int;
+  final name = IsarBinaryWriter.utf8Encoder.convert(value3);
+  dynamicSize += (name.length) as int;
   final value4 = object.purchaseDate;
-  final _purchaseDate = value4;
+  final purchaseDate = value4;
   final value5 = object.repayment;
-  final _repayment = value5;
+  final repayment = value5;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], _cost);
-  writer.writeLong(offsets[1], _depreciationPriodOfMonth);
-  writer.writeBytes(offsets[2], _imageUrl);
-  writer.writeBytes(offsets[3], _name);
-  writer.writeDateTime(offsets[4], _purchaseDate);
-  writer.writeLong(offsets[5], _repayment);
+  writer.writeLong(offsets[0], cost);
+  writer.writeLong(offsets[1], depreciationPriodOfMonth);
+  writer.writeBytes(offsets[2], imageUrl);
+  writer.writeBytes(offsets[3], name);
+  writer.writeDateTime(offsets[4], purchaseDate);
+  writer.writeLong(offsets[5], repayment);
 }
 
 AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
