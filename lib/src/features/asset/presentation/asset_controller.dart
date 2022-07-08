@@ -4,6 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../use_case/asset_use_case.dart';
 
+final assetStateProvider =
+    StateNotifierProvider.autoDispose<AssetState, AsyncValue<AssetList>>(
+        (ref) => AssetState(assetUseCase: ref.watch(assetUseCaseProvider)));
+
 //責務：
 class AssetState extends StateNotifier<AsyncValue<AssetList>> {
   AssetState({required this.assetUseCase}) : super(AsyncData(AssetList([]))) {

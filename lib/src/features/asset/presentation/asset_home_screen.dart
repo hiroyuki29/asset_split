@@ -1,74 +1,64 @@
-import 'dart:io';
-import 'dart:typed_data';
+import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import '../data/save_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AssetHomeScreen extends StatefulWidget {
+import '../../../common_widget/async_value_widget.dart';
+import '../domain/model/asset.dart';
+import 'add_new_asset_screen.dart';
+
+class AssetHomeScreen extends ConsumerWidget {
   const AssetHomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<AssetHomeScreen> createState() => _AssetHomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AsyncValue<AssetList> assetList = ref.watch(assetStateProvider);
 
-class _AssetHomeScreenState extends State<AssetHomeScreen> {
-  File? imageFile;
-  ImagePicker? imagePicker;
-
-  @override
-  void initState() {
-    super.initState();
-    SaveAndReadImage.sharedPrefRead();
-    imagePicker = ImagePicker();
-  }
-
-  _imgFromGallery() async {
-    final XFile? pickedFile =
-        await imagePicker?.pickImage(source: ImageSource.gallery);
-    if (pickedFile == null) {
-      return;
-    }
-    var savedFile = await SaveAndReadImage.saveLocalImage(pickedFile);
-    setState(() {
-      imageFile = savedFile;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Asset split'),
       ),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.lightBlueAccent,
+          child: const Icon(Icons.add),
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => SingleChildScrollView(
+                        child: Container(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: AddNewAssetScreen(),
+                    )));
+          }),
       body: Column(
         children: [
-          Center(
-            child: FutureBuilder(
-              future: SaveAndReadImage.sharedPrefRead(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData == true) {
-                  Uint8List image = snapshot.data;
-                  print(snapshot.hasError);
-                  return Center(
-                    child: Image.memory(
-                      image,
-                      scale: 1.0,
-                    ),
-                  );
-                } else {
-                  Container();
-                }
-                return const Text('sorry');
-              },
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('登録アイテム'),
+          ),
+          Expanded(
+            child: AsyncValueWidget<AssetList>(
+              value: assetList,
+              data: (assets) => assets.list.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No products found',
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: assets.list.length,
+                      itemBuilder: (context, index) {
+                        final asset = assets.list[index];
+                        return ListTile(
+                            title: Text(
+                          asset!.name.assetName,
+                        ));
+                      }),
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          _imgFromGallery();
-        },
       ),
     );
   }

@@ -1,7 +1,15 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../user/domain/value/money_amount.dart';
+import '../data/local_asset_repository_impl.dart';
 import '../domain/local_asset_repository.dart';
 import '../domain/model/asset.dart';
 import '../domain/value/asset_name.dart';
+
+final assetUseCaseProvider = Provider<AssetUseCase>((ref) {
+  return AssetUseCase(
+      localAssetRepository: ref.watch(localAssetRepositoryProvider));
+});
 
 class AssetUseCase {
   AssetUseCase({required this.localAssetRepository});
@@ -29,7 +37,12 @@ class AssetUseCase {
     required Money cost,
     required int priod,
   }) async {
-    await localAssetRepository.updateAsset(id: id, name: name);
+    await localAssetRepository.updateAsset(
+        id: id,
+        name: name.assetName,
+        imageUrl: imageUrl,
+        cost: cost.amount,
+        priod: priod);
     return localAssetRepository.fetchAseets();
   }
 }

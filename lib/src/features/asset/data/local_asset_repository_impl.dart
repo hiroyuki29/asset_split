@@ -1,9 +1,15 @@
 import 'dart:async';
 
+import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
 import 'package:asset_split/src/features/asset/domain/local_asset_repository.dart';
 import 'package:asset_split/src/features/asset/domain/model/asset.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
+
+final localAssetRepositoryProvider = Provider<LocalAssetRepository>((ref) {
+  return LocalAssetRepositoryImpl(ref.watch(isarProvider));
+});
 
 class LocalAssetRepositoryImpl implements LocalAssetRepository {
   LocalAssetRepositoryImpl(this.isar) {
@@ -53,12 +59,12 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
   @override
   Future<void> setAsset(Asset asset) async {
     final newAssetData = AssetData()
-      ..name = asset.name as String
+      ..name = asset.name.assetName
       ..imageUrl = asset.imageUrl
-      ..cost = asset.cost as int
+      ..cost = asset.cost.amount
       ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth
       ..purchaseDate = asset.purchaseDate
-      ..repayment = asset.repayment as int;
+      ..repayment = asset.repayment.amount;
     await isar.writeTxn((isar) async {
       await isar.assetDatas.put(newAssetData);
     });

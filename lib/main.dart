@@ -1,6 +1,8 @@
+import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -14,7 +16,12 @@ void main() async {
     directory: dir.path,
   );
 
-  runApp(const MyApp());
+  runApp(ProviderScope(
+    overrides: [
+      isarProvider.overrideWithValue(isar),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
