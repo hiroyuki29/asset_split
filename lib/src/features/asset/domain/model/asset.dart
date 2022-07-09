@@ -56,7 +56,8 @@ class Asset {
   int daysUntillLimit() {
     DateTime finalDate =
         purchaseDate.add(Duration(days: depreciationPriodOfMonth));
-    return DateTime.now().difference(finalDate).inDays;
+    int remainingDays = finalDate.difference(DateTime.now()).inDays + 1;
+    return remainingDays;
   }
 
   Money balanceAtNow() {
@@ -64,7 +65,9 @@ class Asset {
   }
 
   Money repaymentByDayForAsset() {
-    return balanceAtNow().devide(daysUntillLimit());
+    int days = daysUntillLimit();
+    Money balance = balanceAtNow();
+    return balance.devide(days);
   }
 
   Asset copyWith({
@@ -141,7 +144,8 @@ class AssetList {
     Money sumAllRepaymentByDay = Money(amount: 0);
     if (list.isNotEmpty) {
       for (var asset in list) {
-        sumAllRepaymentByDay.add(asset!.repaymentByDayForAsset());
+        Money addAmount = asset!.repaymentByDayForAsset();
+        sumAllRepaymentByDay = sumAllRepaymentByDay.add(addAmount);
       }
     }
     return sumAllRepaymentByDay;

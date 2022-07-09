@@ -109,7 +109,7 @@ class AddNewAssetScreen extends ConsumerWidget {
                         name: AssetName(assetName: name),
                         image: image,
                         cost: Money(amount: cost),
-                        priod: 1,
+                        priod: 10,
                       );
                 } catch (e) {
                   print(e);

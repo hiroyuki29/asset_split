@@ -1,4 +1,5 @@
 import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,34 +38,40 @@ class AssetHomeScreen extends ConsumerWidget {
             padding: EdgeInsets.all(8.0),
             child: Text('登録アイテム'),
           ),
-          Expanded(
-            child: AsyncValueWidget<AssetList>(
-              value: assetList,
-              data: (assets) => assets.list.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No products found',
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: assets.list.length,
-                      itemBuilder: (context, index) {
-                        final asset = assets.list[index];
-                        return ListTile(
-                          trailing: Image.memory(asset!.image),
-                          title: Text(
-                            asset.name.assetName,
-                          ),
-                          onTap: () {
-                            ref
-                                .read(assetStateProvider.notifier)
-                                .remove(asset.id);
-                          },
-                        );
-                      }),
-            ),
+          AsyncValueWidget<AssetList>(
+            value: assetList,
+            data: (assets) => assets.list.isEmpty
+                ? Center(
+                    child: Text(
+                      'No products found',
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                  )
+                : CarouselSlider.builder(
+                    options: CarouselOptions(
+                      height: 250,
+                      autoPlay: true,
+                    ),
+                    itemCount: assets.list.length,
+                    itemBuilder: (context, itemIndex, pageViewIndex) {
+                      final asset = assets.list[itemIndex];
+                      return GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(assetStateProvider.notifier)
+                              .remove(asset!.id);
+                        },
+                        child: Column(
+                          children: [
+                            Text(asset!.name.assetName),
+                            Image.memory(asset.image),
+                            Text(asset.balanceAtNow().amount.toString()),
+                          ],
+                        ),
+                      );
+                    }),
           ),
+          Text(assetList.value!.sumRepaymentByDay().amount.toString()),
         ],
       ),
     );
