@@ -90,6 +90,8 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
     required Uint8List image,
     required int cost,
     required int priod,
+    required DateTime purchaseDate,
+    required int repayment,
   }) async {
     if (!isar.isOpen) {
       return Future<void>(() {});
@@ -102,7 +104,9 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       ..name = name
       ..image = image
       ..cost = cost
-      ..depreciationPriodOfMonth = priod;
+      ..depreciationPriodOfMonth = priod
+      ..purchaseDate = purchaseDate
+      ..repayment = repayment;
 
     return isar.writeTxn((isar) async {
       await isar.assetDatas.put(assetData);

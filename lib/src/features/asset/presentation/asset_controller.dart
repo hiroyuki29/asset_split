@@ -44,6 +44,11 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
     state = await AsyncValue.guard(() => assetUseCase.remove(id));
   }
 
+  void addPayment(Money add) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => assetUseCase.addPayment(add));
+  }
+
   void update({
     required Asset asset,
     AssetName? name,
@@ -53,11 +58,11 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => assetUseCase.update(
-          id: asset.id,
-          name: name ?? asset.name,
-          image: image ?? asset.image,
-          cost: cost ?? asset.cost,
-          priod: priod ?? asset.depreciationPriodOfMonth,
+          asset: asset,
+          name: name,
+          image: image,
+          cost: cost,
+          priod: priod,
         ));
   }
 }

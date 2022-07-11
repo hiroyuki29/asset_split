@@ -1,6 +1,6 @@
 import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
-import 'package:asset_split/src/features/asset/presentation/asset_home_screen.dart';
+import 'package:asset_split/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
@@ -30,12 +30,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerDelegate: goRouter.routerDelegate,
+      routeInformationParser: goRouter.routeInformationParser,
+      routeInformationProvider: goRouter.routeInformationProvider,
       title: 'Asset Split',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const AssetHomeScreen(),
+      // home: const AssetHomeScreen(),
     );
   }
 }

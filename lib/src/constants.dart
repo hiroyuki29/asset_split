@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+final dateFormat = DateFormat('yyyy-MM-dd');
+final costFormat = NumberFormat('#,###');
 
 const kSendButtonTextStyle = TextStyle(
   color: Colors.lightBlueAccent,
@@ -27,14 +31,3 @@ const kInputTextDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
 );
-
-List<Color> tileColorList = [
-  Colors.grey.shade50,
-  Colors.lightGreen.shade50,
-  Colors.red.shade100,
-  Colors.cyan.shade50,
-  Colors.purple.shade50,
-  Colors.yellow.shade50,
-  Colors.brown.shade50,
-  Colors.grey.shade50
-];

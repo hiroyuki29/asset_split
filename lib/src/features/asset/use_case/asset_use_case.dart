@@ -32,19 +32,68 @@ class AssetUseCase {
     return localAssetRepository.fetchAseets();
   }
 
-  Future<AssetList> update({
-    required int id,
-    required AssetName name,
-    required Uint8List image,
-    required Money cost,
-    required int priod,
-  }) async {
-    await localAssetRepository.updateAsset(
-        id: id,
-        name: name.assetName,
-        image: image,
-        cost: cost.amount,
-        priod: priod);
+  Future<AssetList> addPayment(Money add) async {
+    AssetList assetList = await localAssetRepository.fetchAseets();
+    if (assetList.list.isNotEmpty) {
+      assetList.reflectRepaymentForEachAsset(add);
+      for (final asset in assetList.list) {
+        await updateWithoutFetch(asset: asset!);
+      }
+    }
     return localAssetRepository.fetchAseets();
+  }
+
+  Future<AssetList> update({
+    required Asset asset,
+    AssetName? name,
+    Uint8List? image,
+    Money? cost,
+    int? priod,
+  }) async {
+    updateWithoutFetch(
+      asset: asset,
+      name: name,
+      image: image,
+      cost: cost,
+      priod: priod,
+    );
+    return localAssetRepository.fetchAseets();
+  }
+
+  Future<void> updateWithoutFetch({
+    required Asset asset,
+    AssetName? name,
+    Uint8List? image,
+    Money? cost,
+    int? priod,
+    DateTime? purchaseDate,
+    Money? repayment,
+  }) async {
+    final String assetName;
+    final int assetCost;
+    final int assetRepayment;
+    if (name == null) {
+      assetName = asset.name.assetName;
+    } else {
+      assetName = name.assetName;
+    }
+    if (cost == null) {
+      assetCost = asset.cost.amount;
+    } else {
+      assetCost = cost.amount;
+    }
+    if (repayment == null) {
+      assetRepayment = asset.repayment.amount;
+    } else {
+      assetRepayment = repayment.amount;
+    }
+    await localAssetRepository.updateAsset(
+        id: asset.id,
+        name: assetName,
+        image: image ?? asset.image,
+        cost: assetCost,
+        priod: priod ?? asset.depreciationPriodOfMonth,
+        purchaseDate: purchaseDate ?? asset.purchaseDate,
+        repayment: assetRepayment);
   }
 }

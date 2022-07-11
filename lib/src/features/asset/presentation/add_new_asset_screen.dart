@@ -17,6 +17,7 @@ class AddNewAssetScreen extends ConsumerWidget {
   late String name;
   late Uint8List image;
   late int cost;
+  late int priod;
 
   AddNewAssetScreen({Key? key}) : super(key: key);
 
@@ -64,7 +65,18 @@ class AddNewAssetScreen extends ConsumerWidget {
               onChanged: (value) {
                 cost = int.tryParse(value) ?? 0;
               },
-              decoration: kInputTextDecoration.copyWith(hintText: '基準となる個数'),
+              decoration: kInputTextDecoration.copyWith(hintText: '金額'),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            TextField(
+              keyboardType: TextInputType.emailAddress,
+              textAlign: TextAlign.center,
+              onChanged: (value) {
+                priod = int.tryParse(value) ?? 0;
+              },
+              decoration: kInputTextDecoration.copyWith(hintText: '償却期間(何ヶ月？）'),
             ),
             const SizedBox(
               height: 10,
@@ -109,7 +121,7 @@ class AddNewAssetScreen extends ConsumerWidget {
                         name: AssetName(assetName: name),
                         image: image,
                         cost: Money(amount: cost),
-                        priod: 10,
+                        priod: priod,
                       );
                 } catch (e) {
                   print(e);
