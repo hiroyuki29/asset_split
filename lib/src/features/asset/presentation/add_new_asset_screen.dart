@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:asset_split/src/common_widget/alert_dialog_widget.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,16 +14,22 @@ import '../../../constants.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../domain/value/asset_name.dart';
 
-class AddNewAssetScreen extends ConsumerWidget {
+class AddNewAssetScreen extends ConsumerStatefulWidget {
+  const AddNewAssetScreen({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      AddNewAssetScreenState();
+}
+
+class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
   late String name;
-  late Uint8List image;
+  Uint8List? image;
   late int cost;
   late int priod;
 
-  AddNewAssetScreen({Key? key}) : super(key: key);
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Container(
       color: const Color(0xff757575),
       child: Container(
@@ -96,7 +103,13 @@ class AddNewAssetScreen extends ConsumerWidget {
                   File imageFile = File(imagePath);
                   await imageFile.writeAsBytes(await pickedFile.readAsBytes());
                   ByteData byte = await rootBundle.load(imagePath);
-                  image = byte.buffer.asUint8List();
+                  Uint8List pickImage = byte.buffer.asUint8List();
+                  setState(
+                    () {
+                      print('call setstate');
+                      image = pickImage;
+                    },
+                  );
                 } catch (e) {
                   print(e);
                 }
@@ -108,6 +121,17 @@ class AddNewAssetScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            (image != null)
+                ? Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fitHeight,
+                        image: Image.memory(image!).image,
+                      ),
+                    ),
+                  )
+                : Container(),
             const SizedBox(
               height: 10,
             ),
@@ -119,12 +143,18 @@ class AddNewAssetScreen extends ConsumerWidget {
                 try {
                   ref.read(assetStateProvider.notifier).add(
                         name: AssetName(assetName: name),
-                        image: image,
+                        image: image!,
                         cost: Money(amount: cost),
                         priod: priod,
                       );
+                  Navigator.of(context).pop();
                 } catch (e) {
                   print(e);
+                  showDialog(
+                      context: context,
+                      builder: (_) {
+                        return const AlertDialogWidget(message: '入力にエラーがあります');
+                      });
                 }
               },
               child: const Text(

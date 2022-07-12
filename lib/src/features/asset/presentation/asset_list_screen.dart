@@ -2,6 +2,7 @@ import 'package:asset_split/src/common_widget/async_value_widget.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
@@ -31,7 +32,7 @@ class AssetListScreen extends ConsumerWidget {
               child: Container(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: AddNewAssetScreen(),
+                child: const AddNewAssetScreen(),
               ),
             ),
           );
@@ -50,60 +51,94 @@ class AssetListScreen extends ConsumerWidget {
                 itemCount: assets.list.length,
                 itemBuilder: (context, itemIndex) {
                   final asset = assets.list[itemIndex];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                      onLongPress: () {
-                        ref.read(assetStateProvider.notifier).remove(asset!.id);
-                      },
-                      child: Column(
-                        children: [
-                          Stack(
-                            alignment: AlignmentDirectional.topStart,
-                            children: [
-                              ClipRRect(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(20)),
-                                child: SizedBox(
-                                  child: Image.memory(asset!.image),
-                                ),
-                              ),
-                              Positioned(
-                                top: 10,
-                                left: 10,
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(10)),
-                                    color: Colors.white.withOpacity(0.5),
+                  return Slidable(
+                    startActionPane: ActionPane(
+                      // A motion is a widget used to control how the pane animates.
+                      motion: const ScrollMotion(),
+                      // All actions are defined in the children parameter.
+                      children: [
+                        // A SlidableAction can have an icon and/or a label.
+                        SlidableAction(
+                          onPressed: (value) {
+                            ref
+                                .read(assetStateProvider.notifier)
+                                .remove(asset!.id);
+                          },
+                          backgroundColor: const Color(0xFFFE4A49),
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                        SlidableAction(
+                          onPressed: (value) {},
+                          backgroundColor: const Color(0xFF21B7CA),
+                          foregroundColor: Colors.white,
+                          icon: Icons.edit,
+                          label: 'Edit',
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onLongPress: () {
+                          ref
+                              .read(assetStateProvider.notifier)
+                              .remove(asset!.id);
+                        },
+                        child: Column(
+                          children: [
+                            Stack(
+                              alignment: AlignmentDirectional.topStart,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(20)),
+                                  child: SizedBox(
+                                    height: 200,
+                                    child: Image.memory(asset!.image),
                                   ),
-                                  child: Text(
-                                    asset.name.assetName,
-                                    style: const TextStyle(color: Colors.black),
+                                ),
+                                Positioned(
+                                  top: 10,
+                                  left: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
+                                      color: Colors.white.withOpacity(0.5),
+                                    ),
+                                    child: Text(
+                                      asset.name.assetName,
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                bottom: 10,
-                                right: 10,
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(10)),
-                                    color: Colors.white.withOpacity(0.5),
+                                Positioned(
+                                  bottom: 10,
+                                  right: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
+                                      color: Colors.white.withOpacity(0.5),
+                                    ),
+                                    child: Text(
+                                        '残りの金額：${costFormat.format(asset.balanceAtNow().amount)}円'),
                                   ),
-                                  child: Text(
-                                      '残りの金額：${costFormat.format(asset.balanceAtNow().amount)}円'),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Text('元の金額：${costFormat.format(asset.cost.amount)}'),
-                          Text('償却期間：${asset.depreciationPriodOfMonth}ヶ月'),
-                          Text('購入日：${dateFormat.format(asset.purchaseDate)}'),
-                        ],
+                              ],
+                            ),
+                            Text(
+                                '元の金額：${costFormat.format(asset.cost.amount)}'),
+                            Text('償却期間：${asset.depreciationPriodOfMonth}ヶ月'),
+                            Text(
+                                '購入日：${dateFormat.format(asset.purchaseDate)}'),
+                          ],
+                        ),
                       ),
                     ),
                   );

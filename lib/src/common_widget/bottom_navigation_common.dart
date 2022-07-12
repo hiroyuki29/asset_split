@@ -1,3 +1,4 @@
+import 'package:asset_split/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,10 +13,10 @@ class BottomNavigationCommon extends StatelessWidget {
       onTap: ((index) {
         switch (index) {
           case 0:
-            GoRouter.of(context).go('/');
+            context.goNamed(AppRoute.home.name);
             break;
           case 1:
-            GoRouter.of(context).go('/assets');
+            context.goNamed(AppRoute.assets.name);
             break;
         }
       }),

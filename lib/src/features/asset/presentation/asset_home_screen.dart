@@ -8,7 +8,6 @@ import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../domain/model/asset.dart';
-import 'add_new_asset_screen.dart';
 
 class AssetHomeScreen extends ConsumerWidget {
   const AssetHomeScreen({Key? key}) : super(key: key);
@@ -21,25 +20,7 @@ class AssetHomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Asset split'),
       ),
-      bottomNavigationBar: Builder(
-        builder: (context) {
-          return const BottomNavigationCommon();
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.lightBlueAccent,
-          child: const Icon(Icons.add),
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) => SingleChildScrollView(
-                        child: Container(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: AddNewAssetScreen(),
-                    )));
-          }),
+      bottomNavigationBar: const BottomNavigationCommon(),
       body: Column(
         children: [
           Padding(
