@@ -31,3 +31,30 @@ const kInputTextDecoration = InputDecoration(
     borderRadius: BorderRadius.all(Radius.circular(32.0)),
   ),
 );
+
+// class KeyboardConfig {
+//   static KeyboardActionsConfig buildConfig(BuildContext context) {
+//     final FocusNode nodeText2 = FocusNode();
+//     return KeyboardActionsConfig(
+//       keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+//       keyboardBarColor: Colors.grey[200],
+//       nextFocus: true,
+//       actions: [
+//         KeyboardActionsItem(
+//           focusNode: nodeText2,
+//           toolbarButtons: [
+//             (node) {
+//               return GestureDetector(
+//                 onTap: () => node.unfocus(),
+//                 child: const Padding(
+//                   padding: EdgeInsets.all(8.0),
+//                   child: Icon(Icons.close),
+//                 ),
+//               );
+//             }
+//           ],
+//         ),
+//       ],
+//     );
+//   }
+// }

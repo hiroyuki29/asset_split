@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:asset_split/src/common_widget/alert_dialog_widget.dart';
+import 'package:asset_split/src/common_widget/input_form_widget.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +11,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../../constants.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../domain/value/asset_name.dart';
 import '../domain/value/priod.dart';
@@ -31,6 +31,10 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
   final nameController = TextEditingController();
   final costController = TextEditingController();
   final periodController = TextEditingController();
+
+  final FocusNode nodeText1 = FocusNode();
+  final FocusNode nodeText2 = FocusNode();
+  final FocusNode nodeText3 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -56,38 +60,27 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                 color: Colors.lightBlueAccent,
               ),
             ),
-            const SizedBox(
-              height: 10,
+            InputFormWidget(
+              nodeText: nodeText1,
+              inputController: nameController,
+              textInputType: TextInputType.text,
+              textInputFormatter:
+                  FilteringTextInputFormatter.singleLineFormatter,
+              hintText: '名前',
             ),
-            TextFormField(
-              controller: nameController,
-              keyboardType: TextInputType.emailAddress,
-              textAlign: TextAlign.center,
-              // onChanged: (value) {
-              //   name = value;
-              // },
-              decoration: kInputTextDecoration.copyWith(hintText: 'アイテム名'),
+            InputFormWidget(
+              nodeText: nodeText2,
+              inputController: costController,
+              textInputType: TextInputType.number,
+              textInputFormatter: FilteringTextInputFormatter.digitsOnly,
+              hintText: '金額',
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: costController,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              decoration: kInputTextDecoration.copyWith(hintText: '金額'),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: periodController,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              // onChanged: (value) {
-              //   priod = int.tryParse(value) ?? 0;
-              // },
-              decoration: kInputTextDecoration.copyWith(hintText: '償却期間(何ヶ月？）'),
+            InputFormWidget(
+              nodeText: nodeText3,
+              inputController: periodController,
+              textInputType: TextInputType.number,
+              textInputFormatter: FilteringTextInputFormatter.digitsOnly,
+              hintText: '使用期間',
             ),
             const SizedBox(
               height: 10,
