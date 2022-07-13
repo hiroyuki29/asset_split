@@ -1,6 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:typed_data';
 
+import 'package:asset_split/src/features/asset/domain/value/priod.dart';
 import 'package:asset_split/src/features/user/domain/value/money_amount.dart';
 
 import '../../data/collections/asset_data.dart';
@@ -21,7 +21,7 @@ class Asset {
   final AssetName name;
   final Uint8List image;
   final Money cost;
-  final int depreciationPriodOfMonth;
+  final Period depreciationPriodOfMonth;
   final DateTime purchaseDate;
   final Money repayment;
 
@@ -29,16 +29,16 @@ class Asset {
     required AssetName name,
     required Uint8List image,
     required Money cost,
-    required int priod,
+    required Period period,
   }) {
     return Asset(
         id: 0, //Isar保存時に採番するのでここでは０とする
         name: name,
         image: image,
         cost: cost,
-        depreciationPriodOfMonth: priod,
+        depreciationPriodOfMonth: period,
         purchaseDate: DateTime.now(),
-        repayment: Money(amount: 0));
+        repayment: Money(0));
   }
 
   factory Asset.fromAssetData(AssetData data) {
@@ -46,16 +46,16 @@ class Asset {
       id: data.id,
       name: AssetName(assetName: data.name),
       image: data.image,
-      cost: Money(amount: data.cost),
-      depreciationPriodOfMonth: data.depreciationPriodOfMonth,
+      cost: Money(data.cost),
+      depreciationPriodOfMonth: Period(data.depreciationPriodOfMonth),
       purchaseDate: data.purchaseDate,
-      repayment: Money(amount: data.repayment),
+      repayment: Money(data.repayment),
     );
   }
 
   int daysUntillLimit() {
     DateTime finalDate =
-        purchaseDate.add(Duration(days: depreciationPriodOfMonth * 30));
+        purchaseDate.add(Duration(days: depreciationPriodOfMonth.amount * 30));
     int remainingDays = finalDate.difference(DateTime.now()).inDays + 1;
     return remainingDays;
   }
@@ -75,7 +75,7 @@ class Asset {
     AssetName? name,
     Uint8List? image,
     Money? cost,
-    int? depreciationPriodOfMonth,
+    Period? depreciationPriodOfMonth,
     DateTime? purchaseDate,
     Money? repayment,
   }) {
@@ -141,7 +141,7 @@ class AssetList {
   }
 
   Money sumAllCost() {
-    Money sumAllCost = Money(amount: 0);
+    Money sumAllCost = Money(0);
     if (list.isNotEmpty) {
       for (var asset in list) {
         Money addAmount = asset!.cost;
@@ -152,7 +152,7 @@ class AssetList {
   }
 
   Money sumRepaymentByDay() {
-    Money sumAllRepaymentByDay = Money(amount: 0);
+    Money sumAllRepaymentByDay = Money(0);
     if (list.isNotEmpty) {
       for (var asset in list) {
         Money addAmount = asset!.repaymentByDayForAsset();

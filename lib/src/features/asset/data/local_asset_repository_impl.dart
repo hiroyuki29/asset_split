@@ -63,7 +63,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       ..name = asset.name.assetName
       ..image = asset.image
       ..cost = asset.cost.amount
-      ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth
+      ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth.amount
       ..purchaseDate = asset.purchaseDate
       ..repayment = asset.repayment.amount;
     await isar.writeTxn((isar) async {
@@ -89,7 +89,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
     required String name,
     required Uint8List image,
     required int cost,
-    required int priod,
+    required int period,
     required DateTime purchaseDate,
     required int repayment,
   }) async {
@@ -104,7 +104,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       ..name = name
       ..image = image
       ..cost = cost
-      ..depreciationPriodOfMonth = priod
+      ..depreciationPriodOfMonth = period
       ..purchaseDate = purchaseDate
       ..repayment = repayment;
 

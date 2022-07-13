@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:asset_split/src/features/asset/domain/model/asset.dart';
 import 'package:asset_split/src/features/asset/domain/value/asset_name.dart';
+import 'package:asset_split/src/features/asset/domain/value/priod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../use_case/asset_use_case.dart';
@@ -27,14 +28,14 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
     required AssetName name,
     required Uint8List image,
     required Money cost,
-    required int priod,
+    required Period period,
   }) async {
     state = const AsyncLoading();
     Asset newAsset = Asset.initCreate(
       name: name,
       image: image,
       cost: cost,
-      priod: priod,
+      period: period,
     );
     state = await AsyncValue.guard(() => assetUseCase.add(newAsset));
   }
@@ -54,7 +55,7 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
     AssetName? name,
     Uint8List? image,
     Money? cost,
-    int? priod,
+    Period? period,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => assetUseCase.update(
@@ -62,7 +63,7 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
           name: name,
           image: image,
           cost: cost,
-          priod: priod,
+          period: period,
         ));
   }
 }

@@ -137,7 +137,7 @@ class AssetHomeScreen extends ConsumerWidget {
                   try {
                     ref
                         .read(assetStateProvider.notifier)
-                        .addPayment(Money(amount: 100));
+                        .addPayment(Money(100));
                   } catch (e) {
                     print(e);
                   }
@@ -157,7 +157,7 @@ class AssetHomeScreen extends ConsumerWidget {
                   try {
                     ref
                         .read(assetStateProvider.notifier)
-                        .addPayment(Money(amount: 200));
+                        .addPayment(Money(200));
                   } catch (e) {
                     print(e);
                   }
@@ -177,7 +177,7 @@ class AssetHomeScreen extends ConsumerWidget {
                   try {
                     ref
                         .read(assetStateProvider.notifier)
-                        .addPayment(Money(amount: 300));
+                        .addPayment(Money(300));
                   } catch (e) {
                     print(e);
                   }

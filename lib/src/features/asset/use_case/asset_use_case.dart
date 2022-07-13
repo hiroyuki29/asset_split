@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:asset_split/src/features/asset/domain/value/priod.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../user/domain/value/money_amount.dart';
@@ -48,14 +49,14 @@ class AssetUseCase {
     AssetName? name,
     Uint8List? image,
     Money? cost,
-    int? priod,
+    Period? period,
   }) async {
     updateWithoutFetch(
       asset: asset,
       name: name,
       image: image,
       cost: cost,
-      priod: priod,
+      period: period,
     );
     return localAssetRepository.fetchAseets();
   }
@@ -65,35 +66,20 @@ class AssetUseCase {
     AssetName? name,
     Uint8List? image,
     Money? cost,
-    int? priod,
+    Period? period,
     DateTime? purchaseDate,
     Money? repayment,
   }) async {
-    final String assetName;
-    final int assetCost;
-    final int assetRepayment;
-    if (name == null) {
-      assetName = asset.name.assetName;
-    } else {
-      assetName = name.assetName;
-    }
-    if (cost == null) {
-      assetCost = asset.cost.amount;
-    } else {
-      assetCost = cost.amount;
-    }
-    if (repayment == null) {
-      assetRepayment = asset.repayment.amount;
-    } else {
-      assetRepayment = repayment.amount;
-    }
     await localAssetRepository.updateAsset(
         id: asset.id,
-        name: assetName,
+        name: (name == null) ? asset.name.assetName : name.assetName,
         image: image ?? asset.image,
-        cost: assetCost,
-        priod: priod ?? asset.depreciationPriodOfMonth,
+        cost: (cost == null) ? asset.cost.amount : cost.amount,
+        period: (period == null)
+            ? asset.depreciationPriodOfMonth.amount
+            : period.amount,
         purchaseDate: purchaseDate ?? asset.purchaseDate,
-        repayment: assetRepayment);
+        repayment:
+            (repayment == null) ? asset.repayment.amount : repayment.amount);
   }
 }

@@ -1,36 +1,38 @@
 class Money {
-  Money({required this.amount}) {
-    if (amount < 0) {
+  Money(this._amount) {
+    if (_amount < 0) {
       throw Exception('do not minus amount');
     }
   }
 
-  int amount;
+  final int _amount;
 
-  int toInt() {
-    return amount;
-  }
+  int get amount => _amount;
+
+  // int toInt() {
+  //   return amount;
+  // }
 
   Money add(Money addAmount) {
     final int added = amount + addAmount.amount;
-    return Money(amount: added);
+    return Money(added);
   }
 
   Money decrease(Money minusAmount) {
     final int decreased = amount - minusAmount.amount;
-    return Money(amount: decreased);
+    return Money(decreased);
   }
 
   Money devide(int num) {
     final double devided = amount / num;
-    return Money(amount: devided.round());
+    return Money(devided.round());
   }
 
   Money multi(double num) {
-    return Money(amount: (amount * num).round());
+    return Money((amount * num).round());
   }
 
   double ratio(Money devidingAmount) {
-    return amount / devidingAmount.toInt();
+    return amount / devidingAmount.amount;
   }
 }

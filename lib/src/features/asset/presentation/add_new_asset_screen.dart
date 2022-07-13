@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../../constants.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../domain/value/asset_name.dart';
+import '../domain/value/priod.dart';
 
 class AddNewAssetScreen extends ConsumerStatefulWidget {
   const AddNewAssetScreen({Key? key}) : super(key: key);
@@ -23,10 +24,13 @@ class AddNewAssetScreen extends ConsumerStatefulWidget {
 }
 
 class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
-  late String name;
+  // late String name;
   Uint8List? image;
-  late int cost;
-  late int priod;
+  // late int cost;
+  // late int priod;
+  final nameController = TextEditingController();
+  final costController = TextEditingController();
+  final periodController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -55,34 +59,34 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
             const SizedBox(
               height: 10,
             ),
-            TextField(
+            TextFormField(
+              controller: nameController,
               keyboardType: TextInputType.emailAddress,
               textAlign: TextAlign.center,
-              onChanged: (value) {
-                name = value;
-              },
+              // onChanged: (value) {
+              //   name = value;
+              // },
               decoration: kInputTextDecoration.copyWith(hintText: 'アイテム名'),
             ),
             const SizedBox(
               height: 10,
             ),
-            TextField(
-              keyboardType: TextInputType.emailAddress,
+            TextFormField(
+              controller: costController,
+              keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              onChanged: (value) {
-                cost = int.tryParse(value) ?? 0;
-              },
               decoration: kInputTextDecoration.copyWith(hintText: '金額'),
             ),
             const SizedBox(
               height: 10,
             ),
-            TextField(
-              keyboardType: TextInputType.emailAddress,
+            TextFormField(
+              controller: periodController,
+              keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              onChanged: (value) {
-                priod = int.tryParse(value) ?? 0;
-              },
+              // onChanged: (value) {
+              //   priod = int.tryParse(value) ?? 0;
+              // },
               decoration: kInputTextDecoration.copyWith(hintText: '償却期間(何ヶ月？）'),
             ),
             const SizedBox(
@@ -141,11 +145,17 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
               ),
               onPressed: () async {
                 try {
+                  if (costController.text.isEmpty) {
+                    throw Exception('cost error');
+                  }
+                  if (periodController.text.isEmpty) {
+                    throw Exception('period error');
+                  }
                   ref.read(assetStateProvider.notifier).add(
-                        name: AssetName(assetName: name),
+                        name: AssetName(assetName: nameController.text),
                         image: image!,
-                        cost: Money(amount: cost),
-                        priod: priod,
+                        cost: Money(int.tryParse(costController.text)!),
+                        period: Period(int.tryParse(periodController.text)!),
                       );
                   Navigator.of(context).pop();
                 } catch (e) {

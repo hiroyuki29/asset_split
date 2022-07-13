@@ -134,7 +134,8 @@ class AssetListScreen extends ConsumerWidget {
                             ),
                             Text(
                                 '元の金額：${costFormat.format(asset.cost.amount)}'),
-                            Text('償却期間：${asset.depreciationPriodOfMonth}ヶ月'),
+                            Text(
+                                '償却期間：${asset.depreciationPriodOfMonth.amount}ヶ月'),
                             Text(
                                 '購入日：${dateFormat.format(asset.purchaseDate)}'),
                           ],
@@ -142,7 +143,8 @@ class AssetListScreen extends ConsumerWidget {
                       ),
                     ),
                   );
-                }),
+                },
+              ),
       ),
     );
   }
