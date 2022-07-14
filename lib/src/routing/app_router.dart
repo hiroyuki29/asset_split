@@ -36,8 +36,8 @@ final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
       }
       return null;
     },
-    refreshListenable:
-        GoRouterRefreshStream(ref.watch(userStateProvider.notifier).stream),
+    // refreshListenable:
+    //     GoRouterRefreshStream(ref.watch(userStateProvider.notifier).stream),
     routes: [
       GoRoute(
         path: '/',

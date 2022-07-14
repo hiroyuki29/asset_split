@@ -7,22 +7,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../use_case/asset_use_case.dart';
 
-final assetStateProvider = StateNotifierProvider.autoDispose
-    .family<AssetState, AsyncValue<AssetList>, int>(
-  (ref, userId) =>
-      AssetState(assetUseCase: ref.watch(assetUseCaseProvider), userId: userId),
-);
+final assetStateProvider =
+    StateNotifierProvider.autoDispose<AssetState, AsyncValue<AssetList>>((ref) {
+  return AssetState(assetUseCase: ref.watch(assetUseCaseProvider));
+});
 
 class AssetState extends StateNotifier<AsyncValue<AssetList>> {
-  AssetState({required this.assetUseCase, required this.userId})
-      : super(AsyncData(AssetList([]))) {
-    _fetchAssets();
+  AssetState({required this.assetUseCase}) : super(AsyncData(AssetList([]))) {
+    fetchAssets();
   }
 
   final AssetUseCase assetUseCase;
-  final int userId;
 
-  void _fetchAssets() async {
+  void fetchAssets() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => assetUseCase.fetchAssets());
   }

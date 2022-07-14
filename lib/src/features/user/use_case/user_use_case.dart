@@ -1,3 +1,5 @@
+import 'package:asset_split/src/features/asset/data/local_asset_repository_impl.dart';
+import 'package:asset_split/src/features/asset/domain/local_asset_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/local_user_repository_impl.dart';
@@ -9,14 +11,17 @@ import '../domain/value/user_name.dart';
 final userUseCaseProvider = Provider.autoDispose<UserUseCase>(
   (ref) {
     return UserUseCase(
-        localUserRepository: ref.watch(localUserRepositoryProvider));
+        localUserRepository: ref.watch(localUserRepositoryProvider),
+        localAssetRepository: ref.watch(localAssetRepositoryProvider));
   },
 );
 
 class UserUseCase {
-  UserUseCase({required this.localUserRepository});
+  UserUseCase(
+      {required this.localUserRepository, required this.localAssetRepository});
 
   final LocalUserRepository localUserRepository;
+  final LocalAssetRepository localAssetRepository;
 
   Future<List<User>> fetchUsers() async {
     return await localUserRepository.fetchUsers();
@@ -24,6 +29,7 @@ class UserUseCase {
 
   Future<void> select(int userId) async {
     await localUserRepository.select(userId);
+    await localAssetRepository.fetchAllAseets();
   }
 
   Future<User?> fetchOneUser(int userId) async {

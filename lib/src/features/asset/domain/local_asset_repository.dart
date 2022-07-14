@@ -3,7 +3,8 @@ import 'dart:typed_data';
 import 'model/asset.dart';
 
 abstract class LocalAssetRepository {
-  Future<AssetList> fetchAseets();
+  Future<AssetList> fetchAllAseets();
+  Future<AssetList> fetchAssets(int userId);
   Stream<AssetList> watchAssets();
   Future<void> setAsset(Asset asset);
   Future<void> removeAsset(int assetId);

@@ -17,6 +17,7 @@ class UserListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final int userId = ref.watch(currentUserIdProvider) ?? 0;
     final AsyncValue<List<User>> userList = ref.watch(userStateProvider);
 
     return Scaffold(

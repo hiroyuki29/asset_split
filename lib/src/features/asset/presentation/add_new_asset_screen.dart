@@ -145,7 +145,7 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                   if (periodController.text.isEmpty) {
                     throw Exception('period error');
                   }
-                  ref.read(assetStateProvider(currentUserId).notifier).add(
+                  ref.read(assetStateProvider.notifier).add(
                         userId: currentUserId,
                         name: AssetName(assetName: nameController.text),
                         image: image!,

@@ -1,7 +1,9 @@
 import 'package:asset_split/src/features/user/presentation/user_controller.dart';
+import 'package:asset_split/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../common_widget/alert_dialog_widget.dart';
 import '../../../common_widget/input_form_widget.dart';
@@ -71,6 +73,7 @@ class _AddNewUserScreenState extends ConsumerState<AddNewUserScreen> {
                         name: UserName(name: nameController.text),
                       );
                   Navigator.of(context).pop();
+                  context.goNamed(AppRoute.user.name);
                 } catch (e) {
                   print(e);
                   showDialog(

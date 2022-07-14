@@ -8,12 +8,13 @@ import 'package:asset_split/src/features/asset/domain/model/asset.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
-final localAssetRepositoryProvider = Provider<LocalAssetRepository>((ref) {
-  return LocalAssetRepositoryImpl(ref.watch(isarProvider));
+final localAssetRepositoryProvider =
+    Provider.autoDispose<LocalAssetRepository>((ref) {
+  return LocalAssetRepositoryImpl(isar: ref.watch(isarProvider));
 });
 
 class LocalAssetRepositoryImpl implements LocalAssetRepository {
-  LocalAssetRepositoryImpl(this.isar) {
+  LocalAssetRepositoryImpl({required this.isar}) {
     isar.assetDatas.watchLazy().listen((_) async {
       if (!isar.isOpen) {
         return;
@@ -21,12 +22,11 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       if (_assetDataStreamController.isClosed) {
         return;
       }
-      _assetDataStreamController.sink.add(await fetchAseets());
+      _assetDataStreamController.sink.add(await fetchAllAseets());
     });
   }
 
   final Isar isar;
-
   final _assetDataStreamController = StreamController<AssetList>.broadcast();
 
   Stream<AssetList> get assetDataStream => _assetDataStreamController.stream;
@@ -44,11 +44,30 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
   // }
 
   @override
-  Future<AssetList> fetchAseets() async {
+  Future<AssetList> fetchAllAseets() async {
     if (!isar.isOpen) {
       return AssetList([]);
     }
     final allAssetDatas = await isar.assetDatas.where().findAll();
+    // for (final assetData in allAssetDatas) {
+    //   await assetData.user.load();
+    // }
+
+    AssetList list = AssetList([]);
+    for (AssetData data in allAssetDatas) {
+      Asset asset = Asset.fromAssetData(data);
+      list.add(asset);
+    }
+    return list;
+  }
+
+  @override
+  Future<AssetList> fetchAssets(int userId) async {
+    if (!isar.isOpen) {
+      return AssetList([]);
+    }
+    final allAssetDatas =
+        await isar.assetDatas.filter().idEqualTo(userId).findAll();
     // for (final assetData in allAssetDatas) {
     //   await assetData.user.load();
     // }
