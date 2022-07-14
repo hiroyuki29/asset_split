@@ -78,15 +78,11 @@ class AssetListScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onLongPress: () {
-                          ref
-                              .read(assetStateProvider.notifier)
-                              .remove(asset!.id);
-                        },
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Stack(
                               alignment: AlignmentDirectional.topStart,

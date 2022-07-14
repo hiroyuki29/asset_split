@@ -15,7 +15,7 @@ extension GetAssetDataCollection on Isar {
 const AssetDataSchema = CollectionSchema(
   name: 'AssetData',
   schema:
-      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Long"},{"name":"depreciationPriodOfMonth","type":"Long"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Double"},{"name":"depreciationPriodOfMonth","type":"Long"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Double"}],"indexes":[],"links":[{"name":"user","target":"UserData"}]}',
   idName: 'id',
   propertyIds: {
     'cost': 0,
@@ -28,7 +28,7 @@ const AssetDataSchema = CollectionSchema(
   listProperties: {'image'},
   indexIds: {},
   indexValueTypes: {},
-  linkIds: {},
+  linkIds: {'user': 0},
   backlinkLinkNames: {},
   getId: _assetDataGetId,
   setId: _assetDataSetId,
@@ -56,7 +56,7 @@ void _assetDataSetId(AssetData object, int id) {
 }
 
 List<IsarLinkBase> _assetDataGetLinks(AssetData object) {
-  return [];
+  return [object.user];
 }
 
 void _assetDataSerializeNative(
@@ -87,24 +87,25 @@ void _assetDataSerializeNative(
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], _cost);
+  writer.writeDouble(offsets[0], _cost);
   writer.writeLong(offsets[1], _depreciationPriodOfMonth);
   writer.writeBytes(offsets[2], _image);
   writer.writeBytes(offsets[3], _name);
   writer.writeDateTime(offsets[4], _purchaseDate);
-  writer.writeLong(offsets[5], _repayment);
+  writer.writeDouble(offsets[5], _repayment);
 }
 
 AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
     int id, IsarBinaryReader reader, List<int> offsets) {
   final object = AssetData();
-  object.cost = reader.readLong(offsets[0]);
+  object.cost = reader.readDouble(offsets[0]);
   object.depreciationPriodOfMonth = reader.readLong(offsets[1]);
   object.id = id;
   object.image = reader.readBytes(offsets[2]);
   object.name = reader.readString(offsets[3]);
   object.purchaseDate = reader.readDateTime(offsets[4]);
-  object.repayment = reader.readLong(offsets[5]);
+  object.repayment = reader.readDouble(offsets[5]);
+  _assetDataAttachLinks(collection, id, object);
   return object;
 }
 
@@ -114,7 +115,7 @@ P _assetDataDeserializePropNative<P>(
     case -1:
       return id as P;
     case 0:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
@@ -124,7 +125,7 @@ P _assetDataDeserializePropNative<P>(
     case 4:
       return (reader.readDateTime(offset)) as P;
     case 5:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -164,6 +165,8 @@ AssetData _assetDataDeserializeWeb(
       : DateTime.fromMillisecondsSinceEpoch(0);
   object.repayment =
       IsarNative.jsObjectGet(jsObj, 'repayment') ?? double.negativeInfinity;
+  _assetDataAttachLinks(collection,
+      IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity, object);
   return object;
 }
 
@@ -197,7 +200,9 @@ P _assetDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
   }
 }
 
-void _assetDataAttachLinks(IsarCollection col, int id, AssetData object) {}
+void _assetDataAttachLinks(IsarCollection col, int id, AssetData object) {
+  object.user.attach(col, col.isar.userDatas, 'user', id);
+}
 
 extension AssetDataQueryWhereSort
     on QueryBuilder<AssetData, AssetData, QWhere> {
@@ -264,51 +269,34 @@ extension AssetDataQueryWhere
 
 extension AssetDataQueryFilter
     on QueryBuilder<AssetData, AssetData, QFilterCondition> {
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> costEqualTo(
-      int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'cost',
-      value: value,
-    ));
-  }
-
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> costGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+      double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
-      include: include,
+      include: false,
       property: 'cost',
       value: value,
     ));
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> costLessThan(
-    int value, {
-    bool include = false,
-  }) {
+      double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
-      include: include,
+      include: false,
       property: 'cost',
       value: value,
     ));
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> costBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      double lower, double upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'cost',
       lower: lower,
-      includeLower: includeLower,
+      includeLower: false,
       upper: upper,
-      includeUpper: includeUpper,
+      includeUpper: false,
     ));
   }
 
@@ -564,58 +552,49 @@ extension AssetDataQueryFilter
     ));
   }
 
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> repaymentEqualTo(
-      int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'repayment',
-      value: value,
-    ));
-  }
-
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
-      repaymentGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+      repaymentGreaterThan(double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
-      include: include,
+      include: false,
       property: 'repayment',
       value: value,
     ));
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> repaymentLessThan(
-    int value, {
-    bool include = false,
-  }) {
+      double value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
-      include: include,
+      include: false,
       property: 'repayment',
       value: value,
     ));
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> repaymentBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      double lower, double upper) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'repayment',
       lower: lower,
-      includeLower: includeLower,
+      includeLower: false,
       upper: upper,
-      includeUpper: includeUpper,
+      includeUpper: false,
     ));
   }
 }
 
 extension AssetDataQueryLinks
-    on QueryBuilder<AssetData, AssetData, QFilterCondition> {}
+    on QueryBuilder<AssetData, AssetData, QFilterCondition> {
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> user(
+      FilterQuery<UserData> q) {
+    return linkInternal(
+      isar.userDatas,
+      q,
+      'user',
+    );
+  }
+}
 
 extension AssetDataQueryWhereSortBy
     on QueryBuilder<AssetData, AssetData, QSortBy> {
@@ -754,7 +733,7 @@ extension AssetDataQueryWhereDistinct
 
 extension AssetDataQueryProperty
     on QueryBuilder<AssetData, AssetData, QQueryProperty> {
-  QueryBuilder<AssetData, int, QQueryOperations> costProperty() {
+  QueryBuilder<AssetData, double, QQueryOperations> costProperty() {
     return addPropertyNameInternal('cost');
   }
 
@@ -779,7 +758,7 @@ extension AssetDataQueryProperty
     return addPropertyNameInternal('purchaseDate');
   }
 
-  QueryBuilder<AssetData, int, QQueryOperations> repaymentProperty() {
+  QueryBuilder<AssetData, double, QQueryOperations> repaymentProperty() {
     return addPropertyNameInternal('repayment');
   }
 }

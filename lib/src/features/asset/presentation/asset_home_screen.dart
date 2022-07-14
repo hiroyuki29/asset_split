@@ -111,11 +111,11 @@ class AssetHomeScreen extends ConsumerWidget {
                                   ),
                                 ],
                               ),
-                              Text(
-                                  '元の金額：${costFormat.format(asset.cost.amount)}'),
-                              Text('償却期間：${asset.depreciationPriodOfMonth}ヶ月'),
-                              Text(
-                                  '購入日：${dateFormat.format(asset.purchaseDate)}'),
+                              // Text(
+                              //     '元の金額：${costFormat.format(asset.cost.amount)}'),
+                              // Text('償却期間：${asset.depreciationPriodOfMonth}ヶ月'),
+                              // Text(
+                              //     '購入日：${dateFormat.format(asset.purchaseDate)}'),
                             ],
                           ),
                         ),

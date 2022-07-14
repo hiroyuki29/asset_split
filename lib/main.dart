@@ -1,5 +1,6 @@
 import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
+import 'package:asset_split/src/features/user/data/user_data.dart';
 import 'package:asset_split/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,10 @@ void main() async {
   final dir = await getApplicationDocumentsDirectory();
 
   final isar = await Isar.open(
-    schemas: [AssetDataSchema],
+    schemas: [
+      UserDataSchema,
+      AssetDataSchema,
+    ],
     directory: dir.path,
   );
 
@@ -24,12 +28,13 @@ void main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goRouter = ref.watch(goRouterProvider);
     return MaterialApp.router(
       routerDelegate: goRouter.routerDelegate,
       routeInformationParser: goRouter.routeInformationParser,

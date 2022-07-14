@@ -18,6 +18,12 @@ class BottomNavigationCommon extends StatelessWidget {
           case 1:
             context.goNamed(AppRoute.assets.name);
             break;
+          case 2:
+            context.goNamed(AppRoute.home.name);
+            break;
+          case 3:
+            context.goNamed(AppRoute.user.name);
+            break;
         }
       }),
       items: const [

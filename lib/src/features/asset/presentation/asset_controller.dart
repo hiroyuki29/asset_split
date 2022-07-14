@@ -11,7 +11,6 @@ final assetStateProvider =
     StateNotifierProvider.autoDispose<AssetState, AsyncValue<AssetList>>(
         (ref) => AssetState(assetUseCase: ref.watch(assetUseCaseProvider)));
 
-//責務：
 class AssetState extends StateNotifier<AsyncValue<AssetList>> {
   AssetState({required this.assetUseCase}) : super(AsyncData(AssetList([]))) {
     _fetchAssets();
@@ -25,6 +24,7 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
   }
 
   void add({
+    required int userId,
     required AssetName name,
     required Uint8List image,
     required Money cost,
@@ -32,6 +32,7 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
   }) async {
     state = const AsyncLoading();
     Asset newAsset = Asset.initCreate(
+      userId: userId,
       name: name,
       image: image,
       cost: cost,

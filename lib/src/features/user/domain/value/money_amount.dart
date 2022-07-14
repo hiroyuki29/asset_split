@@ -5,31 +5,31 @@ class Money {
     }
   }
 
-  final int _amount;
+  final double _amount;
 
-  int get amount => _amount;
+  double get amount => _amount;
 
   // int toInt() {
   //   return amount;
   // }
 
   Money add(Money addAmount) {
-    final int added = amount + addAmount.amount;
+    final double added = amount + addAmount.amount;
     return Money(added);
   }
 
   Money decrease(Money minusAmount) {
-    final int decreased = amount - minusAmount.amount;
+    final double decreased = amount - minusAmount.amount;
     return Money(decreased);
   }
 
   Money devide(int num) {
     final double devided = amount / num;
-    return Money(devided.round());
+    return Money(devided);
   }
 
   Money multi(double num) {
-    return Money((amount * num).round());
+    return Money((amount * num));
   }
 
   double ratio(Money devidingAmount) {

@@ -11,9 +11,9 @@ abstract class LocalAssetRepository {
     required int id,
     required String name,
     required Uint8List image,
-    required int cost,
+    required double cost,
     required int period,
     required DateTime purchaseDate,
-    required int repayment,
+    required double repayment,
   });
 }

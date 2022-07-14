@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:typed_data';
 
 import 'package:asset_split/src/features/asset/domain/value/priod.dart';
@@ -9,6 +10,7 @@ import '../value/asset_name.dart';
 class Asset {
   Asset({
     required this.id,
+    required this.userId,
     required this.name,
     required this.image,
     required this.cost,
@@ -18,6 +20,7 @@ class Asset {
   });
 
   final int id;
+  final int userId;
   final AssetName name;
   final Uint8List image;
   final Money cost;
@@ -26,6 +29,7 @@ class Asset {
   final Money repayment;
 
   factory Asset.initCreate({
+    required int userId,
     required AssetName name,
     required Uint8List image,
     required Money cost,
@@ -33,6 +37,7 @@ class Asset {
   }) {
     return Asset(
         id: 0, //Isar保存時に採番するのでここでは０とする
+        userId: userId,
         name: name,
         image: image,
         cost: cost,
@@ -44,6 +49,7 @@ class Asset {
   factory Asset.fromAssetData(AssetData data) {
     return Asset(
       id: data.id,
+      userId: data.user.value!.id,
       name: AssetName(assetName: data.name),
       image: data.image,
       cost: Money(data.cost),
@@ -61,6 +67,9 @@ class Asset {
   }
 
   Money balanceAtNow() {
+    if (cost.amount <= repayment.amount) {
+      return Money(0);
+    }
     return cost.decrease(repayment);
   }
 
@@ -72,6 +81,7 @@ class Asset {
 
   Asset copyWith({
     int? id,
+    int? userId,
     AssetName? name,
     Uint8List? image,
     Money? cost,
@@ -81,6 +91,7 @@ class Asset {
   }) {
     return Asset(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       name: name ?? this.name,
       image: image ?? this.image,
       cost: cost ?? this.cost,
@@ -93,15 +104,15 @@ class Asset {
 
   @override
   String toString() {
-    return 'Asset(id: $id, name: $name, imageUrl: $image, cost: $cost, depreciationPriodOfMonth: $depreciationPriodOfMonth, purchaseDate: $purchaseDate, repayment: $repayment)';
+    return 'Asset(id: $id, userId: $userId, name: $name, image: $image, cost: $cost, depreciationPriodOfMonth: $depreciationPriodOfMonth, purchaseDate: $purchaseDate, repayment: $repayment)';
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(covariant Asset other) {
     if (identical(this, other)) return true;
 
-    return other is Asset &&
-        other.id == id &&
+    return other.id == id &&
+        other.userId == userId &&
         other.name == name &&
         other.image == image &&
         other.cost == cost &&
@@ -113,6 +124,7 @@ class Asset {
   @override
   int get hashCode {
     return id.hashCode ^
+        userId.hashCode ^
         name.hashCode ^
         image.hashCode ^
         cost.hashCode ^
@@ -164,6 +176,9 @@ class AssetList {
 
   void reflectRepaymentForEachAsset(Money allRepayment) {
     Money baseAmount = sumRepaymentByDay();
+    if (baseAmount.amount == 0) {
+      return;
+    }
     if (list.isNotEmpty) {
       list = [
         for (final asset in list)

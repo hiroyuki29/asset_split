@@ -21,7 +21,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       if (_assetDataStreamController.isClosed) {
         return;
       }
-      _assetDataStreamController.sink.add(await findAssets());
+      _assetDataStreamController.sink.add(await fetchAseets());
     });
   }
 
@@ -31,26 +31,30 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
 
   Stream<AssetList> get assetDataStream => _assetDataStreamController.stream;
 
-  Future<AssetList> findAssets() async {
-    if (!isar.isOpen) {
-      return AssetList([]);
-    }
-    AssetList list = AssetList([]);
-    final assetDatas = await isar.assetDatas.where().findAll();
-    for (AssetData data in assetDatas) {
-      list.add(Asset.fromAssetData(data));
-    }
-    return list;
-  }
+  // Future<AssetList> findAssets() async {
+  //   if (!isar.isOpen) {
+  //     return AssetList([]);
+  //   }
+  //   AssetList list = AssetList([]);
+  //   final assetDatas = await isar.assetDatas.where().findAll();
+  //   for (AssetData data in assetDatas) {
+  //     list.add(Asset.fromAssetData(data));
+  //   }
+  //   return list;
+  // }
 
   @override
   Future<AssetList> fetchAseets() async {
     if (!isar.isOpen) {
       return AssetList([]);
     }
-    final assetDatas = await isar.assetDatas.where().findAll();
+    final allAssetDatas = await isar.assetDatas.where().findAll();
+    for (final assetData in allAssetDatas) {
+      await assetData.user.load();
+    }
+
     AssetList list = AssetList([]);
-    for (AssetData data in assetDatas) {
+    for (AssetData data in allAssetDatas) {
       Asset asset = Asset.fromAssetData(data);
       list.add(asset);
     }
@@ -88,10 +92,10 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
     required int id,
     required String name,
     required Uint8List image,
-    required int cost,
+    required double cost,
     required int period,
     required DateTime purchaseDate,
-    required int repayment,
+    required double repayment,
   }) async {
     if (!isar.isOpen) {
       return Future<void>(() {});
@@ -99,6 +103,9 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
     AssetData? assetData = await isar.assetDatas.get(id);
     if (assetData == null) {
       return Future<void>(() {});
+    }
+    if (repayment >= cost) {
+      repayment = cost;
     }
     assetData
       ..name = name
@@ -108,7 +115,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       ..purchaseDate = purchaseDate
       ..repayment = repayment;
 
-    return isar.writeTxn((isar) async {
+    isar.writeTxn((isar) async {
       await isar.assetDatas.put(assetData);
     });
   }

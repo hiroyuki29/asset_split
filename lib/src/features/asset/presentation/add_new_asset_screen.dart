@@ -24,10 +24,7 @@ class AddNewAssetScreen extends ConsumerStatefulWidget {
 }
 
 class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
-  // late String name;
   Uint8List? image;
-  // late int cost;
-  // late int priod;
   final nameController = TextEditingController();
   final costController = TextEditingController();
   final periodController = TextEditingController();
@@ -145,9 +142,10 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                     throw Exception('period error');
                   }
                   ref.read(assetStateProvider.notifier).add(
+                        userId: 0,
                         name: AssetName(assetName: nameController.text),
                         image: image!,
-                        cost: Money(int.tryParse(costController.text)!),
+                        cost: Money(double.tryParse(costController.text)!),
                         period: Period(int.tryParse(periodController.text)!),
                       );
                   Navigator.of(context).pop();
