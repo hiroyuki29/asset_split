@@ -15,7 +15,7 @@ extension GetAssetDataCollection on Isar {
 const AssetDataSchema = CollectionSchema(
   name: 'AssetData',
   schema:
-      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Double"},{"name":"depreciationPriodOfMonth","type":"Long"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Double"}],"indexes":[],"links":[{"name":"user","target":"UserData"}]}',
+      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Double"},{"name":"depreciationPriodOfMonth","type":"Long"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Double"},{"name":"userId","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'cost': 0,
@@ -23,12 +23,13 @@ const AssetDataSchema = CollectionSchema(
     'image': 2,
     'name': 3,
     'purchaseDate': 4,
-    'repayment': 5
+    'repayment': 5,
+    'userId': 6
   },
   listProperties: {'image'},
   indexIds: {},
   indexValueTypes: {},
-  linkIds: {'user': 0},
+  linkIds: {},
   backlinkLinkNames: {},
   getId: _assetDataGetId,
   setId: _assetDataSetId,
@@ -56,7 +57,7 @@ void _assetDataSetId(AssetData object, int id) {
 }
 
 List<IsarLinkBase> _assetDataGetLinks(AssetData object) {
-  return [object.user];
+  return [];
 }
 
 void _assetDataSerializeNative(
@@ -81,6 +82,8 @@ void _assetDataSerializeNative(
   final _purchaseDate = value4;
   final value5 = object.repayment;
   final _repayment = value5;
+  final value6 = object.userId;
+  final _userId = value6;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -93,6 +96,7 @@ void _assetDataSerializeNative(
   writer.writeBytes(offsets[3], _name);
   writer.writeDateTime(offsets[4], _purchaseDate);
   writer.writeDouble(offsets[5], _repayment);
+  writer.writeLong(offsets[6], _userId);
 }
 
 AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
@@ -105,7 +109,7 @@ AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
   object.name = reader.readString(offsets[3]);
   object.purchaseDate = reader.readDateTime(offsets[4]);
   object.repayment = reader.readDouble(offsets[5]);
-  _assetDataAttachLinks(collection, id, object);
+  object.userId = reader.readLong(offsets[6]);
   return object;
 }
 
@@ -126,6 +130,8 @@ P _assetDataDeserializePropNative<P>(
       return (reader.readDateTime(offset)) as P;
     case 5:
       return (reader.readDouble(offset)) as P;
+    case 6:
+      return (reader.readLong(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -143,6 +149,7 @@ dynamic _assetDataSerializeWeb(
   IsarNative.jsObjectSet(jsObj, 'purchaseDate',
       object.purchaseDate.toUtc().millisecondsSinceEpoch);
   IsarNative.jsObjectSet(jsObj, 'repayment', object.repayment);
+  IsarNative.jsObjectSet(jsObj, 'userId', object.userId);
   return jsObj;
 }
 
@@ -165,8 +172,8 @@ AssetData _assetDataDeserializeWeb(
       : DateTime.fromMillisecondsSinceEpoch(0);
   object.repayment =
       IsarNative.jsObjectGet(jsObj, 'repayment') ?? double.negativeInfinity;
-  _assetDataAttachLinks(collection,
-      IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity, object);
+  object.userId =
+      IsarNative.jsObjectGet(jsObj, 'userId') ?? double.negativeInfinity;
   return object;
 }
 
@@ -195,14 +202,15 @@ P _assetDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
     case 'repayment':
       return (IsarNative.jsObjectGet(jsObj, 'repayment') ??
           double.negativeInfinity) as P;
+    case 'userId':
+      return (IsarNative.jsObjectGet(jsObj, 'userId') ??
+          double.negativeInfinity) as P;
     default:
       throw 'Illegal propertyName';
   }
 }
 
-void _assetDataAttachLinks(IsarCollection col, int id, AssetData object) {
-  object.user.attach(col, col.isar.userDatas, 'user', id);
-}
+void _assetDataAttachLinks(IsarCollection col, int id, AssetData object) {}
 
 extension AssetDataQueryWhereSort
     on QueryBuilder<AssetData, AssetData, QWhere> {
@@ -582,19 +590,58 @@ extension AssetDataQueryFilter
       includeUpper: false,
     ));
   }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'userId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'userId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'userId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'userId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
 }
 
 extension AssetDataQueryLinks
-    on QueryBuilder<AssetData, AssetData, QFilterCondition> {
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> user(
-      FilterQuery<UserData> q) {
-    return linkInternal(
-      isar.userDatas,
-      q,
-      'user',
-    );
-  }
-}
+    on QueryBuilder<AssetData, AssetData, QFilterCondition> {}
 
 extension AssetDataQueryWhereSortBy
     on QueryBuilder<AssetData, AssetData, QSortBy> {
@@ -646,6 +693,14 @@ extension AssetDataQueryWhereSortBy
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByRepaymentDesc() {
     return addSortByInternal('repayment', Sort.desc);
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByUserId() {
+    return addSortByInternal('userId', Sort.asc);
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByUserIdDesc() {
+    return addSortByInternal('userId', Sort.desc);
   }
 }
 
@@ -700,6 +755,14 @@ extension AssetDataQueryWhereSortThenBy
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByRepaymentDesc() {
     return addSortByInternal('repayment', Sort.desc);
   }
+
+  QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByUserId() {
+    return addSortByInternal('userId', Sort.asc);
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByUserIdDesc() {
+    return addSortByInternal('userId', Sort.desc);
+  }
 }
 
 extension AssetDataQueryWhereDistinct
@@ -728,6 +791,10 @@ extension AssetDataQueryWhereDistinct
 
   QueryBuilder<AssetData, AssetData, QDistinct> distinctByRepayment() {
     return addDistinctByInternal('repayment');
+  }
+
+  QueryBuilder<AssetData, AssetData, QDistinct> distinctByUserId() {
+    return addDistinctByInternal('userId');
   }
 }
 
@@ -760,5 +827,9 @@ extension AssetDataQueryProperty
 
   QueryBuilder<AssetData, double, QQueryOperations> repaymentProperty() {
     return addPropertyNameInternal('repayment');
+  }
+
+  QueryBuilder<AssetData, int, QQueryOperations> userIdProperty() {
+    return addPropertyNameInternal('userId');
   }
 }

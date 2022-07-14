@@ -29,7 +29,7 @@ final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
       } else {
         final isNoUser = userState.value!.isEmpty;
         if (isNoUser) {
-          if (state.location == '/') {
+          if (state.location == '/' || state.location == '/assets') {
             return '/users';
           }
         }

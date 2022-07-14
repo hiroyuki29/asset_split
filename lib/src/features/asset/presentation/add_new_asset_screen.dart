@@ -12,6 +12,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../user/domain/value/money_amount.dart';
+import '../../user/presentation/current_user_state.dart';
 import '../domain/value/asset_name.dart';
 import '../domain/value/priod.dart';
 
@@ -35,6 +36,9 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final int currentUserId =
+        ref.watch(currentUserIdProvider) ?? 0; //TODO 改善が必要！！
+
     return Container(
       color: const Color(0xff757575),
       child: Container(
@@ -141,8 +145,8 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                   if (periodController.text.isEmpty) {
                     throw Exception('period error');
                   }
-                  ref.read(assetStateProvider.notifier).add(
-                        userId: 0,
+                  ref.read(assetStateProvider(currentUserId).notifier).add(
+                        userId: currentUserId,
                         name: AssetName(assetName: nameController.text),
                         image: image!,
                         cost: Money(double.tryParse(costController.text)!),

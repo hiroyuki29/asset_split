@@ -6,6 +6,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
+import '../../user/presentation/current_user_state.dart';
 import '../domain/model/asset.dart';
 import 'add_new_asset_screen.dart';
 
@@ -14,11 +15,14 @@ class AssetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<AssetList> assetList = ref.watch(assetStateProvider);
+    final int currentUserId =
+        ref.watch(currentUserIdProvider) ?? 0; //TODO 改善が必要！！
+    final AsyncValue<AssetList> assetList =
+        ref.watch(assetStateProvider(currentUserId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Asset split'),
+        title: const Text('買ったモノ一覧'),
       ),
       bottomNavigationBar: const BottomNavigationCommon(),
       floatingActionButton: FloatingActionButton(
@@ -43,7 +47,7 @@ class AssetListScreen extends ConsumerWidget {
         data: (assets) => assets.list.isEmpty
             ? Center(
                 child: Text(
-                  'No Assets found',
+                  '買ったモノを\n登録しよう!',
                   style: Theme.of(context).textTheme.headline4,
                 ),
               )
@@ -61,7 +65,8 @@ class AssetListScreen extends ConsumerWidget {
                         SlidableAction(
                           onPressed: (value) {
                             ref
-                                .read(assetStateProvider.notifier)
+                                .read(
+                                    assetStateProvider(currentUserId).notifier)
                                 .remove(asset!.id);
                           },
                           backgroundColor: const Color(0xFFFE4A49),

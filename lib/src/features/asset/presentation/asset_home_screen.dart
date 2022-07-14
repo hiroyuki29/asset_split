@@ -1,4 +1,5 @@
 import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
+import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,43 +15,37 @@ class AssetHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<AssetList> assetList = ref.watch(assetStateProvider);
+    final int currentUserId =
+        ref.watch(currentUserIdProvider) ?? 0; //TODO 改善が必要！！
+    final AsyncValue<AssetList> assetList =
+        ref.watch(assetStateProvider(currentUserId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Asset split'),
+        title: Text('$currentUserId'),
       ),
       bottomNavigationBar: const BottomNavigationCommon(),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Builder(
-              builder: (BuildContext context) {
-                if (assetList.value == null) {
-                  return Container();
-                } else {
-                  return Text(
-                    '購入合計：${costFormat.format(assetList.value!.sumAllCost().amount)}円',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  );
-                }
-              },
-            ),
-          ),
-          AsyncValueWidget<AssetList>(
-            value: assetList,
-            data: (assets) => assets.list.isEmpty
-                ? Center(
-                    child: Text(
-                      'No Assets found',
-                      style: Theme.of(context).textTheme.headline4,
-                    ),
-                  )
-                : CarouselSlider.builder(
+      body: AsyncValueWidget<AssetList>(
+        value: assetList,
+        data: (assets) => assets.list.isEmpty
+            ? Center(
+                child: Text(
+                  '買ったモノを\n登録しよう!',
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              )
+            : Column(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        '購入合計：${costFormat.format(assetList.value!.sumAllCost().amount)}円',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      )),
+                  CarouselSlider.builder(
                     options: CarouselOptions(
                       height: 270,
                       autoPlay: true,
@@ -63,7 +58,8 @@ class AssetHomeScreen extends ConsumerWidget {
                         child: GestureDetector(
                           onLongPress: () {
                             ref
-                                .read(assetStateProvider.notifier)
+                                .read(
+                                    assetStateProvider(currentUserId).notifier)
                                 .remove(asset!.id);
                           },
                           child: Column(
@@ -120,96 +116,92 @@ class AssetHomeScreen extends ConsumerWidget {
                           ),
                         ),
                       );
-                    }),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          const Text('何円分がまんした？ボタンを押そう！'),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.lightBlueAccent,
-                ),
-                onPressed: () async {
-                  try {
-                    ref
-                        .read(assetStateProvider.notifier)
-                        .addPayment(Money(100));
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-                child: const Text(
-                  '100円',
-                  style: TextStyle(
-                    color: Colors.white,
+                    },
                   ),
-                ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text('何円分がまんした？ボタンを押そう！'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.lightBlueAccent,
+                        ),
+                        onPressed: () async {
+                          try {
+                            ref
+                                .read(
+                                    assetStateProvider(currentUserId).notifier)
+                                .addPayment(Money(100));
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        child: const Text(
+                          '100円',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.lightBlueAccent,
+                        ),
+                        onPressed: () async {
+                          try {
+                            ref
+                                .read(
+                                    assetStateProvider(currentUserId).notifier)
+                                .addPayment(Money(200));
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        child: const Text(
+                          '200円',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.lightBlueAccent,
+                        ),
+                        onPressed: () async {
+                          try {
+                            ref
+                                .read(
+                                    assetStateProvider(currentUserId).notifier)
+                                .addPayment(Money(300));
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        child: const Text(
+                          '300円',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    '一日当たりの目標償却：${costFormat.format(assetList.value!.sumRepaymentByDay().amount)}円',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  )
+                ],
               ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.lightBlueAccent,
-                ),
-                onPressed: () async {
-                  try {
-                    ref
-                        .read(assetStateProvider.notifier)
-                        .addPayment(Money(200));
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-                child: const Text(
-                  '200円',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.lightBlueAccent,
-                ),
-                onPressed: () async {
-                  try {
-                    ref
-                        .read(assetStateProvider.notifier)
-                        .addPayment(Money(300));
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-                child: const Text(
-                  '300円',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Builder(
-            builder: (BuildContext context) {
-              if (assetList.value == null) {
-                return Container();
-              } else {
-                return Text(
-                  '一日当たりの目標償却：${costFormat.format(assetList.value!.sumRepaymentByDay().amount)}円',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                );
-              }
-            },
-          )
-        ],
       ),
     );
   }

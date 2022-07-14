@@ -9,7 +9,7 @@ part 'asset_data.g.dart';
 @Collection()
 class AssetData {
   int id = Isar.autoIncrement;
-  final user = IsarLink<UserData>();
+  late int userId;
   late String name;
   late Uint8List image;
   late double cost;

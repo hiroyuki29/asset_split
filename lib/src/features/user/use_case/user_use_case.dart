@@ -6,10 +6,12 @@ import '../domain/model/user.dart';
 import '../domain/value/money_amount.dart';
 import '../domain/value/user_name.dart';
 
-final userUseCaseProvider = Provider<UserUseCase>((ref) {
-  return UserUseCase(
-      localUserRepository: ref.watch(localUserRepositoryProvider));
-});
+final userUseCaseProvider = Provider.autoDispose<UserUseCase>(
+  (ref) {
+    return UserUseCase(
+        localUserRepository: ref.watch(localUserRepositoryProvider));
+  },
+);
 
 class UserUseCase {
   UserUseCase({required this.localUserRepository});
@@ -17,7 +19,11 @@ class UserUseCase {
   final LocalUserRepository localUserRepository;
 
   Future<List<User>> fetchUsers() async {
-    return localUserRepository.fetchUsers();
+    return await localUserRepository.fetchUsers();
+  }
+
+  Future<void> select(int userId) async {
+    await localUserRepository.select(userId);
   }
 
   Future<User?> fetchOneUser(int userId) async {
@@ -27,12 +33,12 @@ class UserUseCase {
 
   Future<List<User>> add(User newUser) async {
     await localUserRepository.setUser(newUser);
-    return localUserRepository.fetchUsers();
+    return await localUserRepository.fetchUsers();
   }
 
   Future<List<User>> remove(int userId) async {
     await localUserRepository.removeUser(userId);
-    return localUserRepository.fetchUsers();
+    return await localUserRepository.fetchUsers();
   }
 
   Future<void> addPayment({required User user, required Money add}) async {

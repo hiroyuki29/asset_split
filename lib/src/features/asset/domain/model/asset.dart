@@ -49,7 +49,7 @@ class Asset {
   factory Asset.fromAssetData(AssetData data) {
     return Asset(
       id: data.id,
-      userId: data.user.value!.id,
+      userId: data.userId,
       name: AssetName(assetName: data.name),
       image: data.image,
       cost: Money(data.cost),

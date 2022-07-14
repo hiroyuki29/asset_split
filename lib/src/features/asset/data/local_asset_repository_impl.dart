@@ -49,9 +49,9 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       return AssetList([]);
     }
     final allAssetDatas = await isar.assetDatas.where().findAll();
-    for (final assetData in allAssetDatas) {
-      await assetData.user.load();
-    }
+    // for (final assetData in allAssetDatas) {
+    //   await assetData.user.load();
+    // }
 
     AssetList list = AssetList([]);
     for (AssetData data in allAssetDatas) {
@@ -65,6 +65,7 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
   Future<void> setAsset(Asset asset) async {
     final newAssetData = AssetData()
       ..name = asset.name.assetName
+      ..userId = asset.userId
       ..image = asset.image
       ..cost = asset.cost.amount
       ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth.amount

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:asset_split/src/features/user/data/user_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../asset/data/asset_isar_provider.dart';
 import '../domain/local_user_repository.dart';
@@ -43,15 +44,22 @@ class LocalUserRepositoryImpl implements LocalUserRepository {
   }
 
   @override
-  Future<void> removeUser(int userId) {
-    // TODO: implement removeUser
-    throw UnimplementedError();
+  Future<void> removeUser(int userId) async {
+    await isar.writeTxn((isar) async {
+      return isar.userDatas.delete(userId);
+    });
   }
 
   @override
-  Future<void> setUser(User user) {
-    // TODO: implement setUser
-    throw UnimplementedError();
+  Future<void> setUser(User user) async {
+    final newUserData = UserData()
+      ..name = user.name.name
+      ..createDateTime = user.createDateTime
+      ..sumAmount = user.sumAmount.amount
+      ..payBackAmount = user.payBackAmount.amount;
+    await isar.writeTxn((isar) async {
+      await isar.userDatas.put(newUserData);
+    });
   }
 
   @override
@@ -96,5 +104,11 @@ class LocalUserRepositoryImpl implements LocalUserRepository {
       return null;
     }
     return User.fromUserData(data);
+  }
+
+  @override
+  Future<void> select(int userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('currentUserId', userId);
   }
 }
