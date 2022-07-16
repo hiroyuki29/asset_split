@@ -21,28 +21,27 @@ class AssetUseCase {
   final LocalAssetRepository localAssetRepository;
 
   Future<AssetList> fetchAssets() async {
-    return localAssetRepository.fetchAllAseets();
+    return await localAssetRepository.fetchAssets();
   }
 
-  Future<AssetList> add(Asset newAsset) async {
+  Future<void> add(Asset newAsset) async {
     await localAssetRepository.setAsset(newAsset);
-    return localAssetRepository.fetchAllAseets();
+    // return localAssetRepository.fetchAllAssets();
   }
 
   Future<AssetList> remove(int assetId) async {
     await localAssetRepository.removeAsset(assetId);
-    return localAssetRepository.fetchAllAseets();
+    return localAssetRepository.fetchAssets();
   }
 
-  Future<AssetList> addPayment(Money add) async {
-    AssetList assetList = await localAssetRepository.fetchAllAseets();
+  Future<void> addPayment(Money add) async {
+    AssetList assetList = await localAssetRepository.fetchAssets();
     if (assetList.list.isNotEmpty) {
       assetList.reflectRepaymentForEachAsset(add);
       for (final asset in assetList.list) {
         await updateWithoutFetch(asset: asset!);
       }
     }
-    return localAssetRepository.fetchAllAseets();
   }
 
   Future<AssetList> update({
@@ -59,7 +58,7 @@ class AssetUseCase {
       cost: cost,
       period: period,
     );
-    return localAssetRepository.fetchAllAseets();
+    return localAssetRepository.fetchAssets();
   }
 
   Future<void> updateWithoutFetch({

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:asset_split/src/features/asset/data/local_asset_repository_impl.dart';
 import 'package:asset_split/src/features/asset/domain/model/asset.dart';
 import 'package:asset_split/src/features/asset/domain/value/asset_name.dart';
 import 'package:asset_split/src/features/asset/domain/value/priod.dart';
@@ -7,19 +8,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../use_case/asset_use_case.dart';
 
-final assetStateProvider =
+final assetControllerProvider =
     StateNotifierProvider.autoDispose<AssetState, AsyncValue<AssetList>>((ref) {
-  return AssetState(assetUseCase: ref.watch(assetUseCaseProvider));
+  final notifier = AssetState(assetUseCase: ref.watch(assetUseCaseProvider));
+  ref.listen<AsyncValue<AssetList>>(localAssetListStreamProvider,
+      ((previous, next) {
+    notifier.stateChange(next);
+  }));
+
+  return notifier;
 });
 
 class AssetState extends StateNotifier<AsyncValue<AssetList>> {
-  AssetState({required this.assetUseCase}) : super(AsyncData(AssetList([]))) {
+  AssetState({
+    required this.assetUseCase,
+  }) : super(AsyncData(AssetList([]))) {
     fetchAssets();
   }
 
   final AssetUseCase assetUseCase;
 
-  void fetchAssets() async {
+  void stateChange(AsyncValue<AssetList> value) {
+    state = value;
+  }
+
+  Future<void> fetchAssets() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => assetUseCase.fetchAssets());
   }
@@ -39,7 +52,8 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
       cost: cost,
       period: period,
     );
-    state = await AsyncValue.guard(() => assetUseCase.add(newAsset));
+    // state = await AsyncValue.guard(() => assetUseCase.add(newAsset));
+    assetUseCase.add(newAsset);
   }
 
   void remove(int id) async {
@@ -47,9 +61,11 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
     state = await AsyncValue.guard(() => assetUseCase.remove(id));
   }
 
-  void addPayment(Money add) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() => assetUseCase.addPayment(add));
+  Future<void> addPayment(Money add) async {
+    // state = const AsyncLoading();
+    // state = await AsyncValue.guard(
+    // () =>
+    await assetUseCase.addPayment(add);
   }
 
   void update({

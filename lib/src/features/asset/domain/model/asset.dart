@@ -189,11 +189,11 @@ class AssetList {
     }
   }
 
-  AssetList selectAssets(int userId) {
-    list = [
-      for (final asset in list)
-        if (asset!.userId == userId) asset,
-    ];
-    return AssetList(list);
-  }
+  // AssetList selectAssets(int userId) {
+  //   list = [
+  //     for (final asset in list)
+  //       if (asset!.userId == userId) asset,
+  //   ];
+  //   return AssetList(list);
+  // }
 }

@@ -15,9 +15,8 @@ class AssetHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int currentUserId =
-        ref.watch(currentUserIdProvider) ?? 0; //TODO 改善が必要！！
-    final AsyncValue<AssetList> assetList = ref.watch(assetStateProvider);
+    final int currentUserId = ref.watch(currentUserIdProvider)!; //TODO 改善が必要！！
+    final AsyncValue<AssetList> assetList = ref.watch(assetControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +25,7 @@ class AssetHomeScreen extends ConsumerWidget {
       bottomNavigationBar: const BottomNavigationCommon(),
       body: AsyncValueWidget<AssetList>(
         value: assetList,
-        data: (assets) => assets.selectAssets(currentUserId).list.isEmpty
+        data: (assets) => assets.list.isEmpty
             ? Center(
                 child: Text(
                   '買ったモノを\n登録しよう!',
@@ -38,7 +37,7 @@ class AssetHomeScreen extends ConsumerWidget {
                   Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        '購入合計：${costFormat.format(assetList.value!.selectAssets(currentUserId).sumAllCost().amount)}円',
+                        '購入合計：${costFormat.format(assetList.value!.sumAllCost().amount)}円',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -49,16 +48,15 @@ class AssetHomeScreen extends ConsumerWidget {
                       height: 270,
                       autoPlay: true,
                     ),
-                    itemCount: assets.selectAssets(currentUserId).list.length,
+                    itemCount: assets.list.length,
                     itemBuilder: (context, itemIndex, pageViewIndex) {
-                      final asset =
-                          assets.selectAssets(currentUserId).list[itemIndex];
+                      final asset = assets.list[itemIndex];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           onLongPress: () {
                             ref
-                                .read(assetStateProvider.notifier)
+                                .read(assetControllerProvider.notifier)
                                 .remove(asset!.id);
                           },
                           child: Column(
@@ -131,7 +129,7 @@ class AssetHomeScreen extends ConsumerWidget {
                         onPressed: () async {
                           try {
                             ref
-                                .read(assetStateProvider.notifier)
+                                .read(assetControllerProvider.notifier)
                                 .addPayment(Money(100));
                           } catch (e) {
                             print(e);
@@ -151,7 +149,7 @@ class AssetHomeScreen extends ConsumerWidget {
                         onPressed: () async {
                           try {
                             ref
-                                .read(assetStateProvider.notifier)
+                                .read(assetControllerProvider.notifier)
                                 .addPayment(Money(200));
                           } catch (e) {
                             print(e);
@@ -171,7 +169,7 @@ class AssetHomeScreen extends ConsumerWidget {
                         onPressed: () async {
                           try {
                             ref
-                                .read(assetStateProvider.notifier)
+                                .read(assetControllerProvider.notifier)
                                 .addPayment(Money(300));
                           } catch (e) {
                             print(e);
@@ -190,7 +188,7 @@ class AssetHomeScreen extends ConsumerWidget {
                     height: 20,
                   ),
                   Text(
-                    '一日当たりの目標償却：${costFormat.format(assetList.value!.selectAssets(currentUserId).sumRepaymentByDay().amount)}円',
+                    '一日当たりの目標償却：${costFormat.format(assetList.value!.sumRepaymentByDay().amount)}円',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,

@@ -5,16 +5,22 @@ import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
 import 'package:asset_split/src/features/asset/domain/local_asset_repository.dart';
 import 'package:asset_split/src/features/asset/domain/model/asset.dart';
+import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
-final localAssetRepositoryProvider =
-    Provider.autoDispose<LocalAssetRepository>((ref) {
-  return LocalAssetRepositoryImpl(isar: ref.watch(isarProvider));
+final localAssetRepositoryProvider = Provider<LocalAssetRepository>((ref) {
+  return LocalAssetRepositoryImpl(
+      isar: ref.watch(isarProvider), userId: ref.watch(currentUserIdProvider)!);
+});
+
+final localAssetListStreamProvider = StreamProvider<AssetList>((ref) {
+  final localAssetRepository = ref.watch(localAssetRepositoryProvider);
+  return localAssetRepository.assetDataStream;
 });
 
 class LocalAssetRepositoryImpl implements LocalAssetRepository {
-  LocalAssetRepositoryImpl({required this.isar}) {
+  LocalAssetRepositoryImpl({required this.isar, required this.userId}) {
     isar.assetDatas.watchLazy().listen((_) async {
       if (!isar.isOpen) {
         return;
@@ -22,55 +28,25 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
       if (_assetDataStreamController.isClosed) {
         return;
       }
-      _assetDataStreamController.sink.add(await fetchAllAseets());
+      _assetDataStreamController.sink.add(await fetchAssets());
     });
   }
 
+  // final Ref ref;
   final Isar isar;
+  final int userId;
   final _assetDataStreamController = StreamController<AssetList>.broadcast();
 
+  @override
   Stream<AssetList> get assetDataStream => _assetDataStreamController.stream;
 
-  // Future<AssetList> findAssets() async {
-  //   if (!isar.isOpen) {
-  //     return AssetList([]);
-  //   }
-  //   AssetList list = AssetList([]);
-  //   final assetDatas = await isar.assetDatas.where().findAll();
-  //   for (AssetData data in assetDatas) {
-  //     list.add(Asset.fromAssetData(data));
-  //   }
-  //   return list;
-  // }
-
   @override
-  Future<AssetList> fetchAllAseets() async {
-    if (!isar.isOpen) {
-      return AssetList([]);
-    }
-    final allAssetDatas = await isar.assetDatas.where().findAll();
-    // for (final assetData in allAssetDatas) {
-    //   await assetData.user.load();
-    // }
-
-    AssetList list = AssetList([]);
-    for (AssetData data in allAssetDatas) {
-      Asset asset = Asset.fromAssetData(data);
-      list.add(asset);
-    }
-    return list;
-  }
-
-  @override
-  Future<AssetList> fetchAssets(int userId) async {
+  Future<AssetList> fetchAssets() async {
     if (!isar.isOpen) {
       return AssetList([]);
     }
     final allAssetDatas =
-        await isar.assetDatas.filter().idEqualTo(userId).findAll();
-    // for (final assetData in allAssetDatas) {
-    //   await assetData.user.load();
-    // }
+        await isar.assetDatas.filter().userIdEqualTo(userId).findAll();
 
     AssetList list = AssetList([]);
     for (AssetData data in allAssetDatas) {
@@ -93,11 +69,6 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
     await isar.writeTxn((isar) async {
       await isar.assetDatas.put(newAssetData);
     });
-  }
-
-  @override
-  Stream<AssetList> watchAssets() async* {
-    isar.assetDatas.watchLazy().listen((event) async {});
   }
 
   @override

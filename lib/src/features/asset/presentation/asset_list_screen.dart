@@ -17,7 +17,7 @@ class AssetListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final int currentUserId =
         ref.watch(currentUserIdProvider) ?? 0; //TODO 改善が必要！！
-    final AsyncValue<AssetList> assetList = ref.watch(assetStateProvider);
+    final AsyncValue<AssetList> assetList = ref.watch(assetControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +64,7 @@ class AssetListScreen extends ConsumerWidget {
                         SlidableAction(
                           onPressed: (value) {
                             ref
-                                .read(assetStateProvider.notifier)
+                                .read(assetControllerProvider.notifier)
                                 .remove(asset!.id);
                           },
                           backgroundColor: const Color(0xFFFE4A49),
