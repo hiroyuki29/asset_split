@@ -9,18 +9,20 @@ import 'package:asset_split/src/features/user/presentation/current_user_state.da
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
-final localAssetRepositoryProvider = Provider<LocalAssetRepository>((ref) {
-  return LocalAssetRepositoryImpl(
-      isar: ref.watch(isarProvider), userId: ref.watch(currentUserIdProvider)!);
+final assetRepositoryProvider = Provider.autoDispose<AssetRepository>((ref) {
+  return AssetRepositoryImpl(
+      isar: ref.watch(isarProvider),
+      userId: ref.watch(currentUserStateProvider));
 });
 
-final localAssetListStreamProvider = StreamProvider<AssetList>((ref) {
-  final localAssetRepository = ref.watch(localAssetRepositoryProvider);
-  return localAssetRepository.assetDataStream;
+final assetListStreamProvider = StreamProvider.autoDispose<AssetList>((ref) {
+  final assetRepository = ref.watch(assetRepositoryProvider);
+  assetRepository.watchAssets();
+  return assetRepository.assetDataStream;
 });
 
-class LocalAssetRepositoryImpl implements LocalAssetRepository {
-  LocalAssetRepositoryImpl({required this.isar, required this.userId}) {
+class AssetRepositoryImpl implements AssetRepository {
+  AssetRepositoryImpl({required this.isar, required this.userId}) {
     isar.assetDatas.watchLazy().listen((_) async {
       if (!isar.isOpen) {
         return;
@@ -57,10 +59,15 @@ class LocalAssetRepositoryImpl implements LocalAssetRepository {
   }
 
   @override
+  Future<void> watchAssets() async {
+    _assetDataStreamController.sink.add(await fetchAssets());
+  }
+
+  @override
   Future<void> setAsset(Asset asset) async {
     final newAssetData = AssetData()
       ..name = asset.name.assetName
-      ..userId = asset.userId
+      ..userId = userId
       ..image = asset.image
       ..cost = asset.cost.amount
       ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth.amount

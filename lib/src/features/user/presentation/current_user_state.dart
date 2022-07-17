@@ -1,14 +1,15 @@
 import 'package:asset_split/src/features/user/use_case/user_use_case.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-final currentUserIdProvider = StateNotifierProvider<CurrentUserState, int?>(
-  (ref) => CurrentUserState(
-    userUseCase: ref.watch(userUseCaseProvider),
-  ),
-);
+import '../domain/model/user.dart';
+import '../domain/value/user_name.dart';
 
-class CurrentUserState extends StateNotifier<int?> {
+final currentUserStateProvider =
+    StateNotifierProvider.autoDispose<CurrentUserState, int>((ref) {
+  return CurrentUserState(userUseCase: ref.watch(userUseCaseProvider));
+});
+
+class CurrentUserState extends StateNotifier<int> {
   CurrentUserState({
     required this.userUseCase,
   }) : super(0) {
@@ -18,13 +19,21 @@ class CurrentUserState extends StateNotifier<int?> {
   final UserUseCase userUseCase;
 
   void _readPref() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    state = pref.getInt('currentUserId') ?? 0;
+    state = await userUseCase.fetchCurrentUserId();
   }
 
   void changeCurrentUser(int userId) async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
     await userUseCase.select(userId);
-    state = pref.getInt('currentUserId');
+    state = userId;
+  }
+
+  Future<void> addNewUser({
+    required UserName name,
+  }) async {
+    User newUser = User.initCreate(
+      name: name,
+    );
+    int newUserId = await userUseCase.add(newUser);
+    state = newUserId;
   }
 }

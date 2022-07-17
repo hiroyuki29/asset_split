@@ -9,12 +9,18 @@ import '../../asset/data/asset_isar_provider.dart';
 import '../domain/local_user_repository.dart';
 import '../domain/model/user.dart';
 
-final localUserRepositoryProvider = Provider<LocalUserRepository>((ref) {
-  return LocalUserRepositoryImpl(ref.watch(isarProvider));
+final userRepositoryProvider = Provider<UserRepository>((ref) {
+  return UserRepositoryImpl(ref.watch(isarProvider));
 });
 
-class LocalUserRepositoryImpl implements LocalUserRepository {
-  LocalUserRepositoryImpl(this.isar) {
+final userListStreamProvider = StreamProvider<List<User>>((ref) {
+  final userRepository = ref.watch(userRepositoryProvider);
+  userRepository.watchUsers();
+  return userRepository.userDataStream;
+});
+
+class UserRepositoryImpl implements UserRepository {
+  UserRepositoryImpl(this.isar) {
     isar.userDatas.watchLazy().listen((_) async {
       if (!isar.isOpen) {
         return;
@@ -29,18 +35,25 @@ class LocalUserRepositoryImpl implements LocalUserRepository {
   final _userDataStreamController = StreamController<List<User>>.broadcast();
 
   @override
+  Stream<List<User>> get userDataStream => _userDataStreamController.stream;
+
+  @override
   Future<List<User>> fetchUsers() async {
     if (!isar.isOpen) {
       return [];
     }
     final allUserDatas = await isar.userDatas.where().findAll();
-
     List<User> list = [];
     for (UserData data in allUserDatas) {
       User user = User.fromUserData(data);
       list.add(user);
     }
     return list;
+  }
+
+  @override
+  Future<void> watchUsers() async {
+    _userDataStreamController.sink.add(await fetchUsers());
   }
 
   @override
@@ -51,15 +64,16 @@ class LocalUserRepositoryImpl implements LocalUserRepository {
   }
 
   @override
-  Future<void> setUser(User user) async {
+  Future<int> setUser(User user) async {
     final newUserData = UserData()
       ..name = user.name.name
       ..createDateTime = user.createDateTime
       ..sumAmount = user.sumAmount.amount
       ..payBackAmount = user.payBackAmount.amount;
-    await isar.writeTxn((isar) async {
-      await isar.userDatas.put(newUserData);
+    int currentUserId = await isar.writeTxn((isar) async {
+      return await isar.userDatas.put(newUserData);
     });
+    return currentUserId;
   }
 
   @override
@@ -82,16 +96,9 @@ class LocalUserRepositoryImpl implements LocalUserRepository {
       ..createDateTime = createDateTime
       ..sumAmount = sumAmount
       ..payBackAmount = payBackAmount;
-
     isar.writeTxn((isar) async {
       await isar.userDatas.put(userData);
     });
-  }
-
-  @override
-  Stream<List<User>> watchUsers() {
-    // TODO: implement watchUsers
-    throw UnimplementedError();
   }
 
   @override

@@ -1,6 +1,7 @@
+import 'package:asset_split/src/features/user/data/local_user_repository_impl.dart';
 import 'package:asset_split/src/features/user/presentation/add_new_user_screen.dart';
 import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
-import 'package:asset_split/src/features/user/presentation/user_controller.dart';
+import 'package:asset_split/src/features/user/use_case/user_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -17,8 +18,7 @@ class UserListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int userId = ref.watch(currentUserIdProvider) ?? 0;
-    final AsyncValue<List<User>> userList = ref.watch(userStateProvider);
+    final AsyncValue<List<User>> userList = ref.watch(userListStreamProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,9 +64,7 @@ class UserListScreen extends ConsumerWidget {
                         // A SlidableAction can have an icon and/or a label.
                         SlidableAction(
                           onPressed: (value) {
-                            ref
-                                .read(userStateProvider.notifier)
-                                .remove(user.id);
+                            ref.read(userUseCaseProvider).remove(user.id);
                           },
                           backgroundColor: const Color(0xFFFE4A49),
                           foregroundColor: Colors.white,
@@ -91,7 +89,7 @@ class UserListScreen extends ConsumerWidget {
                         SlidableAction(
                           onPressed: (value) {
                             ref
-                                .read(currentUserIdProvider.notifier)
+                                .read(currentUserStateProvider.notifier)
                                 .changeCurrentUser(user.id);
                             context.goNamed(AppRoute.home.name);
                           },
@@ -102,23 +100,18 @@ class UserListScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    child: GestureDetector(
-                      onLongPress: () => ref
-                          .read(currentUserIdProvider.notifier)
-                          .changeCurrentUser(user.id),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text('ユーザー名：${user.name.name}'),
-                              Text(
-                                  '資産合計${costFormat.format(user.sumAmount.amount)}円'),
-                              Text(
-                                  '返済合計：${costFormat.format(user.payBackAmount.amount)}円'),
-                            ],
-                          ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('ユーザー名：${user.name.name}'),
+                            Text(
+                                '資産合計${costFormat.format(user.sumAmount.amount)}円'),
+                            Text(
+                                '返済合計：${costFormat.format(user.payBackAmount.amount)}円'),
+                          ],
                         ),
                       ),
                     ),

@@ -11,8 +11,7 @@ import '../use_case/asset_use_case.dart';
 final assetControllerProvider =
     StateNotifierProvider.autoDispose<AssetState, AsyncValue<AssetList>>((ref) {
   final notifier = AssetState(assetUseCase: ref.watch(assetUseCaseProvider));
-  ref.listen<AsyncValue<AssetList>>(localAssetListStreamProvider,
-      ((previous, next) {
+  ref.listen<AsyncValue<AssetList>>(assetListStreamProvider, ((previous, next) {
     notifier.stateChange(next);
   }));
 
@@ -37,24 +36,24 @@ class AssetState extends StateNotifier<AsyncValue<AssetList>> {
     state = await AsyncValue.guard(() => assetUseCase.fetchAssets());
   }
 
-  void add({
-    required int userId,
-    required AssetName name,
-    required Uint8List image,
-    required Money cost,
-    required Period period,
-  }) async {
-    state = const AsyncLoading();
-    Asset newAsset = Asset.initCreate(
-      userId: userId,
-      name: name,
-      image: image,
-      cost: cost,
-      period: period,
-    );
-    // state = await AsyncValue.guard(() => assetUseCase.add(newAsset));
-    assetUseCase.add(newAsset);
-  }
+  // void add({
+  //   required int userId,
+  //   required AssetName name,
+  //   required Uint8List image,
+  //   required Money cost,
+  //   required Period period,
+  // }) async {
+  //   state = const AsyncLoading();
+  //   Asset newAsset = Asset.initCreate(
+  //     userId: userId,
+  //     name: name,
+  //     image: image,
+  //     cost: cost,
+  //     period: period,
+  //   );
+  //   // state = await AsyncValue.guard(() => assetUseCase.add(newAsset));
+  //   assetUseCase.add(newAsset);
+  // }
 
   void remove(int id) async {
     state = const AsyncLoading();

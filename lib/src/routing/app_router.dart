@@ -1,12 +1,12 @@
 import 'package:asset_split/src/features/asset/presentation/add_new_asset_screen.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_home_screen.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_list_screen.dart';
+import 'package:asset_split/src/features/user/data/local_user_repository_impl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common_widget/loading_screen.dart';
 import '../features/user/domain/model/user.dart';
-import '../features/user/presentation/user_controller.dart';
 import '../features/user/presentation/user_list_screen.dart';
 
 enum AppRoute {
@@ -17,7 +17,7 @@ enum AppRoute {
 }
 
 final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
-  final AsyncValue<List<User>> userState = ref.watch(userStateProvider);
+  final AsyncValue<List<User>> userState = ref.watch(userListStreamProvider);
   return GoRouter(
     initialLocation: '/',
     debugLogDiagnostics: true,

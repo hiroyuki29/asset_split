@@ -1,4 +1,4 @@
-import 'package:asset_split/src/features/user/presentation/user_controller.dart';
+import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:asset_split/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,7 +69,7 @@ class _AddNewUserScreenState extends ConsumerState<AddNewUserScreen> {
                   if (nameController.text.isEmpty) {
                     throw Exception('user name error');
                   }
-                  ref.read(userStateProvider.notifier).add(
+                  ref.read(currentUserStateProvider.notifier).addNewUser(
                         name: UserName(name: nameController.text),
                       );
                   Navigator.of(context).pop();

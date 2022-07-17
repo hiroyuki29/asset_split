@@ -29,7 +29,6 @@ class Asset {
   final Money repayment;
 
   factory Asset.initCreate({
-    required int userId,
     required AssetName name,
     required Uint8List image,
     required Money cost,
@@ -37,7 +36,7 @@ class Asset {
   }) {
     return Asset(
         id: 0, //Isar保存時に採番するのでここでは０とする
-        userId: userId,
+        userId: 0, //currentUserIdをしようするのでここでは０とする
         name: name,
         image: image,
         cost: cost,

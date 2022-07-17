@@ -1,4 +1,5 @@
-import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
+import 'package:asset_split/src/features/asset/data/local_asset_repository_impl.dart';
+import 'package:asset_split/src/features/asset/use_case/asset_use_case.dart';
 import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,9 @@ class AssetHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int currentUserId = ref.watch(currentUserIdProvider)!; //TODO 改善が必要！！
-    final AsyncValue<AssetList> assetList = ref.watch(assetControllerProvider);
+    final int currentUserId =
+        ref.watch(currentUserStateProvider); //TODO 改善が必要！！
+    final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,9 +57,7 @@ class AssetHomeScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           onLongPress: () {
-                            ref
-                                .read(assetControllerProvider.notifier)
-                                .remove(asset!.id);
+                            ref.read(assetUseCaseProvider).remove(asset!.id);
                           },
                           child: Column(
                             children: [
@@ -129,7 +129,7 @@ class AssetHomeScreen extends ConsumerWidget {
                         onPressed: () async {
                           try {
                             ref
-                                .read(assetControllerProvider.notifier)
+                                .read(assetUseCaseProvider)
                                 .addPayment(Money(100));
                           } catch (e) {
                             print(e);
@@ -149,7 +149,7 @@ class AssetHomeScreen extends ConsumerWidget {
                         onPressed: () async {
                           try {
                             ref
-                                .read(assetControllerProvider.notifier)
+                                .read(assetUseCaseProvider)
                                 .addPayment(Money(200));
                           } catch (e) {
                             print(e);
@@ -169,7 +169,7 @@ class AssetHomeScreen extends ConsumerWidget {
                         onPressed: () async {
                           try {
                             ref
-                                .read(assetControllerProvider.notifier)
+                                .read(assetUseCaseProvider)
                                 .addPayment(Money(300));
                           } catch (e) {
                             print(e);

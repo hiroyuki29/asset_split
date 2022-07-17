@@ -1,11 +1,12 @@
 import 'model/user.dart';
 
-abstract class LocalUserRepository {
+abstract class UserRepository {
+  Stream<List<User>> get userDataStream;
   Future<List<User>> fetchUsers();
   Future<void> select(int userId);
   Future<User?> fetchOneUser(int userId);
-  Stream<List<User>> watchUsers();
-  Future<void> setUser(User user);
+  Future<void> watchUsers();
+  Future<int> setUser(User user);
   Future<void> removeUser(int userId);
   Future<void> updateUser({
     required int id,

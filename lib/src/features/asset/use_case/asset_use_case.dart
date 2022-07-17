@@ -11,31 +11,41 @@ import '../domain/value/asset_name.dart';
 
 final assetUseCaseProvider = Provider.autoDispose<AssetUseCase>((ref) {
   return AssetUseCase(
-    localAssetRepository: ref.watch(localAssetRepositoryProvider),
+    assetRepository: ref.watch(assetRepositoryProvider),
   );
 });
 
 class AssetUseCase {
-  AssetUseCase({required this.localAssetRepository});
+  AssetUseCase({required this.assetRepository});
 
-  final LocalAssetRepository localAssetRepository;
+  final AssetRepository assetRepository;
 
   Future<AssetList> fetchAssets() async {
-    return await localAssetRepository.fetchAssets();
+    return await assetRepository.fetchAssets();
   }
 
-  Future<void> add(Asset newAsset) async {
-    await localAssetRepository.setAsset(newAsset);
-    // return localAssetRepository.fetchAllAssets();
+  Future<void> add({
+    required AssetName name,
+    required Uint8List image,
+    required Money cost,
+    required Period period,
+  }) async {
+    Asset newAsset = Asset.initCreate(
+      name: name,
+      image: image,
+      cost: cost,
+      period: period,
+    );
+    await assetRepository.setAsset(newAsset);
   }
 
   Future<AssetList> remove(int assetId) async {
-    await localAssetRepository.removeAsset(assetId);
-    return localAssetRepository.fetchAssets();
+    await assetRepository.removeAsset(assetId);
+    return assetRepository.fetchAssets();
   }
 
   Future<void> addPayment(Money add) async {
-    AssetList assetList = await localAssetRepository.fetchAssets();
+    AssetList assetList = await assetRepository.fetchAssets();
     if (assetList.list.isNotEmpty) {
       assetList.reflectRepaymentForEachAsset(add);
       for (final asset in assetList.list) {
@@ -58,7 +68,7 @@ class AssetUseCase {
       cost: cost,
       period: period,
     );
-    return localAssetRepository.fetchAssets();
+    return assetRepository.fetchAssets();
   }
 
   Future<void> updateWithoutFetch({
@@ -70,7 +80,7 @@ class AssetUseCase {
     DateTime? purchaseDate,
     Money? repayment,
   }) async {
-    await localAssetRepository.updateAsset(
+    await assetRepository.updateAsset(
         id: asset.id,
         name: (name == null) ? asset.name.assetName : name.assetName,
         image: image ?? asset.image,
