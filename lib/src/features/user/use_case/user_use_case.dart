@@ -8,7 +8,7 @@ import '../domain/model/user.dart';
 import '../domain/value/money_amount.dart';
 import '../domain/value/user_name.dart';
 
-final userUseCaseProvider = Provider.autoDispose<UserUseCase>(
+final userUseCaseProvider = Provider<UserUseCase>(
   (ref) {
     return UserUseCase(
       userRepository: ref.watch(userRepositoryProvider),
@@ -29,7 +29,7 @@ class UserUseCase {
   }
 
   Future<void> select(int userId) async {
-    await userRepository.select(userId);
+    await currentUserRepository.select(userId);
   }
 
   Future<int> fetchCurrentUserId() async {

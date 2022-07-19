@@ -9,7 +9,7 @@ import '../domain/local_asset_repository.dart';
 import '../domain/model/asset.dart';
 import '../domain/value/asset_name.dart';
 
-final assetUseCaseProvider = Provider.autoDispose<AssetUseCase>((ref) {
+final assetUseCaseProvider = Provider<AssetUseCase>((ref) {
   return AssetUseCase(
     assetRepository: ref.watch(assetRepositoryProvider),
   );
@@ -25,27 +25,19 @@ class AssetUseCase {
   }
 
   Future<void> add({
-    required AssetName name,
-    required Uint8List image,
-    required Money cost,
-    required Period period,
+    required Asset asset,
   }) async {
-    Asset newAsset = Asset.initCreate(
-      name: name,
-      image: image,
-      cost: cost,
-      period: period,
-    );
-    await assetRepository.setAsset(newAsset);
+    await assetRepository.setAsset(asset);
   }
 
-  Future<AssetList> remove(int assetId) async {
+  Future<void> remove(int assetId) async {
     await assetRepository.removeAsset(assetId);
-    return assetRepository.fetchAssets();
+    // return assetRepository.fetchAssets();
   }
 
-  Future<void> addPayment(Money add) async {
-    AssetList assetList = await assetRepository.fetchAssets();
+  Future<void> addPayment(
+      {required Money add, required AssetList assetList}) async {
+    // AssetList assetList = await assetRepository.fetchAssets();
     if (assetList.list.isNotEmpty) {
       assetList.reflectRepaymentForEachAsset(add);
       for (final asset in assetList.list) {
@@ -54,7 +46,7 @@ class AssetUseCase {
     }
   }
 
-  Future<AssetList> update({
+  Future<void> update({
     required Asset asset,
     AssetName? name,
     Uint8List? image,
@@ -68,7 +60,7 @@ class AssetUseCase {
       cost: cost,
       period: period,
     );
-    return assetRepository.fetchAssets();
+    // return assetRepository.fetchAssets();
   }
 
   Future<void> updateWithoutFetch({

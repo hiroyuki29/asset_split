@@ -3,7 +3,8 @@ import 'dart:typed_data';
 
 import 'package:asset_split/src/common_widget/alert_dialog_widget.dart';
 import 'package:asset_split/src/common_widget/input_form_widget.dart';
-import 'package:asset_split/src/features/asset/use_case/asset_use_case.dart';
+import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
+import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +13,6 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../user/domain/value/money_amount.dart';
-import '../../user/presentation/current_user_state.dart';
 import '../domain/value/asset_name.dart';
 import '../domain/value/priod.dart';
 
@@ -36,9 +36,7 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final int currentUserId =
-    //     ref.watch(currentUserIdProvider) ?? 0; //TODO 改善が必要！！
-
+    final currentUserId = ref.watch(currentUserStateProvider).value;
     return Container(
       color: const Color(0xff757575),
       child: Container(
@@ -145,7 +143,8 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                   if (periodController.text.isEmpty) {
                     throw Exception('period error');
                   }
-                  ref.read(assetUseCaseProvider).add(
+                  ref.read(assetControllerProvider.notifier).add(
+                        userId: currentUserId ?? 0,
                         name: AssetName(assetName: nameController.text),
                         image: image!,
                         cost: Money(double.tryParse(costController.text)!),

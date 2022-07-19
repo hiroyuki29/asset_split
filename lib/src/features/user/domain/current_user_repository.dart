@@ -1,6 +1,7 @@
 abstract class CurrentUserRepository {
-  // Stream<int> get currentUserDataStream;
+  Stream<int> currentUserId();
   // int? get userId;
+  void watchCurrentUser();
   Future<int> fetchCurrentUser();
   Future<void> select(int userId);
 }

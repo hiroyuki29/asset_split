@@ -5,6 +5,7 @@ import 'model/asset.dart';
 abstract class AssetRepository {
   Stream<AssetList> get assetDataStream;
   Future<AssetList> fetchAssets();
+  Future<AssetList> fetchAllAssets();
   Future<void> watchAssets();
   Future<void> setAsset(Asset asset);
   Future<void> removeAsset(int assetId);

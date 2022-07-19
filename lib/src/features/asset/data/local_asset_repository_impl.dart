@@ -5,14 +5,18 @@ import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
 import 'package:asset_split/src/features/asset/domain/local_asset_repository.dart';
 import 'package:asset_split/src/features/asset/domain/model/asset.dart';
-import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
+import 'package:asset_split/src/features/user/data/current_user_repository_impl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
-final assetRepositoryProvider = Provider.autoDispose<AssetRepository>((ref) {
-  return AssetRepositoryImpl(
-      isar: ref.watch(isarProvider),
-      userId: ref.watch(currentUserStateProvider));
+final assetRepositoryProvider = Provider<AssetRepository>((ref) {
+  final userIdAsyncValue = ref.watch(currentUserIdProvider);
+  var userId = userIdAsyncValue.value;
+  if (userId != null) {
+    return AssetRepositoryImpl(isar: ref.watch(isarProvider), userId: userId);
+  } else {
+    return AssetRepositoryImpl(isar: ref.watch(isarProvider), userId: 0);
+  }
 });
 
 final assetListStreamProvider = StreamProvider.autoDispose<AssetList>((ref) {
@@ -59,6 +63,21 @@ class AssetRepositoryImpl implements AssetRepository {
   }
 
   @override
+  Future<AssetList> fetchAllAssets() async {
+    if (!isar.isOpen) {
+      return AssetList([]);
+    }
+    final allAssetDatas = await isar.assetDatas.where().findAll();
+
+    AssetList list = AssetList([]);
+    for (AssetData data in allAssetDatas) {
+      Asset asset = Asset.fromAssetData(data);
+      list.add(asset);
+    }
+    return list;
+  }
+
+  @override
   Future<void> watchAssets() async {
     _assetDataStreamController.sink.add(await fetchAssets());
   }
@@ -67,7 +86,7 @@ class AssetRepositoryImpl implements AssetRepository {
   Future<void> setAsset(Asset asset) async {
     final newAssetData = AssetData()
       ..name = asset.name.assetName
-      ..userId = userId
+      ..userId = asset.userId
       ..image = asset.image
       ..cost = asset.cost.amount
       ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth.amount
@@ -107,7 +126,7 @@ class AssetRepositoryImpl implements AssetRepository {
     }
     assetData
       ..name = name
-      ..image = image
+      // ..image = image
       ..cost = cost
       ..depreciationPriodOfMonth = period
       ..purchaseDate = purchaseDate

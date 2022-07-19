@@ -1,6 +1,5 @@
 import 'package:asset_split/src/common_widget/async_value_widget.dart';
-import 'package:asset_split/src/features/asset/data/local_asset_repository_impl.dart';
-import 'package:asset_split/src/features/asset/use_case/asset_use_case.dart';
+import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -15,7 +14,7 @@ class AssetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
+    final AsyncValue<AssetList> assetList = ref.watch(assetControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +60,9 @@ class AssetListScreen extends ConsumerWidget {
                         // A SlidableAction can have an icon and/or a label.
                         SlidableAction(
                           onPressed: (value) {
-                            ref.read(assetUseCaseProvider).remove(asset!.id);
+                            ref
+                                .read(assetControllerProvider.notifier)
+                                .remove(asset!.id);
                           },
                           backgroundColor: const Color(0xFFFE4A49),
                           foregroundColor: Colors.white,
