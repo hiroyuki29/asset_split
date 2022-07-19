@@ -130,7 +130,7 @@ class AssetListScreen extends ConsumerWidget {
                             Text(
                                 '元の金額：${costFormat.format(asset.cost.amount)}'),
                             Text(
-                                '償却期間：${asset.depreciationPriodOfDay.amount}日'),
+                                '償却期間：${asset.period.year}年${asset.period.month}月${asset.period.day}日'),
                             Text(
                                 '購入日：${dateFormat.format(asset.purchaseDate)}'),
                           ],

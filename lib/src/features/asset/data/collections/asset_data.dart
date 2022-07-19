@@ -13,7 +13,7 @@ class AssetData {
   late String name;
   late Uint8List image;
   late double cost;
-  late int depreciationPriodOfDay;
+  late List<int> period;
   late DateTime purchaseDate;
   late double repayment;
 

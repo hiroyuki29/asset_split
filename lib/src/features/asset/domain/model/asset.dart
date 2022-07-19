@@ -14,7 +14,7 @@ class Asset {
     required this.name,
     required this.image,
     required this.cost,
-    required this.depreciationPriodOfDay,
+    required this.period,
     required this.purchaseDate,
     required this.repayment,
   });
@@ -24,7 +24,7 @@ class Asset {
   final AssetName name;
   final Uint8List image;
   final Money cost;
-  final Period depreciationPriodOfDay;
+  final Period period;
   final DateTime purchaseDate;
   final Money repayment;
 
@@ -41,7 +41,7 @@ class Asset {
         name: name,
         image: image,
         cost: cost,
-        depreciationPriodOfDay: period,
+        period: period,
         purchaseDate: DateTime.now(),
         repayment: Money(0));
   }
@@ -53,15 +53,15 @@ class Asset {
       name: AssetName(assetName: data.name),
       image: data.image,
       cost: Money(data.cost),
-      depreciationPriodOfDay: Period(data.depreciationPriodOfDay),
+      period: Period.fromList(data.period),
       purchaseDate: data.purchaseDate,
       repayment: Money(data.repayment),
     );
   }
 
   int daysUntillLimit() {
-    DateTime finalDate =
-        purchaseDate.add(Duration(days: depreciationPriodOfDay.amount));
+    DateTime finalDate = purchaseDate.add(
+        Duration(days: period.year * 365 + period.month * 30 + period.day));
     int remainingDays = finalDate.difference(DateTime.now()).inDays + 1;
     return remainingDays;
   }
@@ -85,7 +85,7 @@ class Asset {
     AssetName? name,
     Uint8List? image,
     Money? cost,
-    Period? depreciationPriodOfDay,
+    Period? period,
     DateTime? purchaseDate,
     Money? repayment,
   }) {
@@ -95,8 +95,7 @@ class Asset {
       name: name ?? this.name,
       image: image ?? this.image,
       cost: cost ?? this.cost,
-      depreciationPriodOfDay:
-          depreciationPriodOfDay ?? this.depreciationPriodOfDay,
+      period: period ?? this.period,
       purchaseDate: purchaseDate ?? this.purchaseDate,
       repayment: repayment ?? this.repayment,
     );
@@ -104,7 +103,7 @@ class Asset {
 
   @override
   String toString() {
-    return 'Asset(id: $id, userId: $userId, name: $name, image: $image, cost: $cost, depreciationPriodOfMonth: $depreciationPriodOfDay, purchaseDate: $purchaseDate, repayment: $repayment)';
+    return 'Asset(id: $id, userId: $userId, name: $name, image: $image, cost: $cost, depreciationPriodOfMonth: $period, purchaseDate: $purchaseDate, repayment: $repayment)';
   }
 
   @override
@@ -116,7 +115,7 @@ class Asset {
         other.name == name &&
         other.image == image &&
         other.cost == cost &&
-        other.depreciationPriodOfDay == depreciationPriodOfDay &&
+        other.period == period &&
         other.purchaseDate == purchaseDate &&
         other.repayment == repayment;
   }
@@ -128,7 +127,7 @@ class Asset {
         name.hashCode ^
         image.hashCode ^
         cost.hashCode ^
-        depreciationPriodOfDay.hashCode ^
+        period.hashCode ^
         purchaseDate.hashCode ^
         repayment.hashCode;
   }

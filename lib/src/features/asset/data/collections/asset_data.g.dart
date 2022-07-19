@@ -15,18 +15,18 @@ extension GetAssetDataCollection on Isar {
 const AssetDataSchema = CollectionSchema(
   name: 'AssetData',
   schema:
-      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Double"},{"name":"depreciationPriodOfDay","type":"Long"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Double"},{"name":"userId","type":"Long"}],"indexes":[],"links":[]}',
+      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Double"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"period","type":"LongList"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Double"},{"name":"userId","type":"Long"}],"indexes":[],"links":[]}',
   idName: 'id',
   propertyIds: {
     'cost': 0,
-    'depreciationPriodOfDay': 1,
-    'image': 2,
-    'name': 3,
+    'image': 1,
+    'name': 2,
+    'period': 3,
     'purchaseDate': 4,
     'repayment': 5,
     'userId': 6
   },
-  listProperties: {'image'},
+  listProperties: {'image', 'period'},
   indexIds: {},
   indexValueTypes: {},
   linkIds: {},
@@ -70,14 +70,15 @@ void _assetDataSerializeNative(
   var dynamicSize = 0;
   final value0 = object.cost;
   final _cost = value0;
-  final value1 = object.depreciationPriodOfDay;
-  final _depreciationPriodOfDay = value1;
-  final value2 = object.image;
-  dynamicSize += (value2.length) * 1;
-  final _image = value2;
-  final value3 = object.name;
-  final _name = IsarBinaryWriter.utf8Encoder.convert(value3);
+  final value1 = object.image;
+  dynamicSize += (value1.length) * 1;
+  final _image = value1;
+  final value2 = object.name;
+  final _name = IsarBinaryWriter.utf8Encoder.convert(value2);
   dynamicSize += (_name.length) as int;
+  final value3 = object.period;
+  dynamicSize += (value3.length) * 8;
+  final _period = value3;
   final value4 = object.purchaseDate;
   final _purchaseDate = value4;
   final value5 = object.repayment;
@@ -91,9 +92,9 @@ void _assetDataSerializeNative(
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
   writer.writeDouble(offsets[0], _cost);
-  writer.writeLong(offsets[1], _depreciationPriodOfDay);
-  writer.writeBytes(offsets[2], _image);
-  writer.writeBytes(offsets[3], _name);
+  writer.writeBytes(offsets[1], _image);
+  writer.writeBytes(offsets[2], _name);
+  writer.writeLongList(offsets[3], _period);
   writer.writeDateTime(offsets[4], _purchaseDate);
   writer.writeDouble(offsets[5], _repayment);
   writer.writeLong(offsets[6], _userId);
@@ -103,10 +104,10 @@ AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
     int id, IsarBinaryReader reader, List<int> offsets) {
   final object = AssetData();
   object.cost = reader.readDouble(offsets[0]);
-  object.depreciationPriodOfDay = reader.readLong(offsets[1]);
   object.id = id;
-  object.image = reader.readBytes(offsets[2]);
-  object.name = reader.readString(offsets[3]);
+  object.image = reader.readBytes(offsets[1]);
+  object.name = reader.readString(offsets[2]);
+  object.period = reader.readLongList(offsets[3]) ?? [];
   object.purchaseDate = reader.readDateTime(offsets[4]);
   object.repayment = reader.readDouble(offsets[5]);
   object.userId = reader.readLong(offsets[6]);
@@ -121,11 +122,11 @@ P _assetDataDeserializePropNative<P>(
     case 0:
       return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
-    case 2:
       return (reader.readBytes(offset)) as P;
-    case 3:
+    case 2:
       return (reader.readString(offset)) as P;
+    case 3:
+      return (reader.readLongList(offset) ?? []) as P;
     case 4:
       return (reader.readDateTime(offset)) as P;
     case 5:
@@ -141,11 +142,10 @@ dynamic _assetDataSerializeWeb(
     IsarCollection<AssetData> collection, AssetData object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'cost', object.cost);
-  IsarNative.jsObjectSet(
-      jsObj, 'depreciationPriodOfDay', object.depreciationPriodOfDay);
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
   IsarNative.jsObjectSet(jsObj, 'image', object.image);
   IsarNative.jsObjectSet(jsObj, 'name', object.name);
+  IsarNative.jsObjectSet(jsObj, 'period', object.period);
   IsarNative.jsObjectSet(jsObj, 'purchaseDate',
       object.purchaseDate.toUtc().millisecondsSinceEpoch);
   IsarNative.jsObjectSet(jsObj, 'repayment', object.repayment);
@@ -158,12 +158,14 @@ AssetData _assetDataDeserializeWeb(
   final object = AssetData();
   object.cost =
       IsarNative.jsObjectGet(jsObj, 'cost') ?? double.negativeInfinity;
-  object.depreciationPriodOfDay =
-      IsarNative.jsObjectGet(jsObj, 'depreciationPriodOfDay') ??
-          double.negativeInfinity;
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
   object.image = IsarNative.jsObjectGet(jsObj, 'image') ?? Uint8List(0);
   object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
+  object.period = (IsarNative.jsObjectGet(jsObj, 'period') as List?)
+          ?.map((e) => e ?? double.negativeInfinity)
+          .toList()
+          .cast<int>() ??
+      [];
   object.purchaseDate = IsarNative.jsObjectGet(jsObj, 'purchaseDate') != null
       ? DateTime.fromMillisecondsSinceEpoch(
               IsarNative.jsObjectGet(jsObj, 'purchaseDate'),
@@ -182,9 +184,6 @@ P _assetDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
     case 'cost':
       return (IsarNative.jsObjectGet(jsObj, 'cost') ?? double.negativeInfinity)
           as P;
-    case 'depreciationPriodOfDay':
-      return (IsarNative.jsObjectGet(jsObj, 'depreciationPriodOfDay') ??
-          double.negativeInfinity) as P;
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
@@ -192,6 +191,12 @@ P _assetDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
       return (IsarNative.jsObjectGet(jsObj, 'image') ?? Uint8List(0)) as P;
     case 'name':
       return (IsarNative.jsObjectGet(jsObj, 'name') ?? '') as P;
+    case 'period':
+      return ((IsarNative.jsObjectGet(jsObj, 'period') as List?)
+              ?.map((e) => e ?? double.negativeInfinity)
+              .toList()
+              .cast<int>() ??
+          []) as P;
     case 'purchaseDate':
       return (IsarNative.jsObjectGet(jsObj, 'purchaseDate') != null
           ? DateTime.fromMillisecondsSinceEpoch(
@@ -305,57 +310,6 @@ extension AssetDataQueryFilter
       includeLower: false,
       upper: upper,
       includeUpper: false,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
-      depreciationPriodOfDayEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'depreciationPriodOfDay',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
-      depreciationPriodOfDayGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'depreciationPriodOfDay',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
-      depreciationPriodOfDayLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'depreciationPriodOfDay',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
-      depreciationPriodOfDayBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'depreciationPriodOfDay',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
     ));
   }
 
@@ -510,6 +464,55 @@ extension AssetDataQueryFilter
     ));
   }
 
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> periodAnyEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'period',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
+      periodAnyGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'period',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> periodAnyLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'period',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> periodAnyBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'period',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> purchaseDateEqualTo(
       DateTime value) {
     return addFilterConditionInternal(FilterCondition(
@@ -653,16 +656,6 @@ extension AssetDataQueryWhereSortBy
     return addSortByInternal('cost', Sort.desc);
   }
 
-  QueryBuilder<AssetData, AssetData, QAfterSortBy>
-      sortByDepreciationPriodOfDay() {
-    return addSortByInternal('depreciationPriodOfDay', Sort.asc);
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterSortBy>
-      sortByDepreciationPriodOfDayDesc() {
-    return addSortByInternal('depreciationPriodOfDay', Sort.desc);
-  }
-
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -714,16 +707,6 @@ extension AssetDataQueryWhereSortThenBy
     return addSortByInternal('cost', Sort.desc);
   }
 
-  QueryBuilder<AssetData, AssetData, QAfterSortBy>
-      thenByDepreciationPriodOfDay() {
-    return addSortByInternal('depreciationPriodOfDay', Sort.asc);
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterSortBy>
-      thenByDepreciationPriodOfDayDesc() {
-    return addSortByInternal('depreciationPriodOfDay', Sort.desc);
-  }
-
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -771,11 +754,6 @@ extension AssetDataQueryWhereDistinct
     return addDistinctByInternal('cost');
   }
 
-  QueryBuilder<AssetData, AssetData, QDistinct>
-      distinctByDepreciationPriodOfDay() {
-    return addDistinctByInternal('depreciationPriodOfDay');
-  }
-
   QueryBuilder<AssetData, AssetData, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -804,11 +782,6 @@ extension AssetDataQueryProperty
     return addPropertyNameInternal('cost');
   }
 
-  QueryBuilder<AssetData, int, QQueryOperations>
-      depreciationPriodOfDayProperty() {
-    return addPropertyNameInternal('depreciationPriodOfDay');
-  }
-
   QueryBuilder<AssetData, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }
@@ -819,6 +792,10 @@ extension AssetDataQueryProperty
 
   QueryBuilder<AssetData, String, QQueryOperations> nameProperty() {
     return addPropertyNameInternal('name');
+  }
+
+  QueryBuilder<AssetData, List<int>, QQueryOperations> periodProperty() {
+    return addPropertyNameInternal('period');
   }
 
   QueryBuilder<AssetData, DateTime, QQueryOperations> purchaseDateProperty() {

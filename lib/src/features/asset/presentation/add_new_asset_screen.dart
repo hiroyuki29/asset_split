@@ -198,7 +198,8 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                         image: image!,
                         cost: Money(double.tryParse(costController.text)!),
                         // period: Period(int.tryParse(periodController.text)!),
-                        period: Period(days!),
+                        period:
+                            Period(year: years!, month: months!, day: days!),
                       );
                   Navigator.of(context).pop();
                 } catch (e) {

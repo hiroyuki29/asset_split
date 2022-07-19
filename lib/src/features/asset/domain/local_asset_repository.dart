@@ -14,7 +14,7 @@ abstract class AssetRepository {
     required String name,
     required Uint8List image,
     required double cost,
-    required int period,
+    required List<int> period,
     required DateTime purchaseDate,
     required double repayment,
   });

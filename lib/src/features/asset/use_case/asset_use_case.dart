@@ -88,9 +88,7 @@ class AssetUseCase {
         name: (name == null) ? asset.name.assetName : name.assetName,
         image: image ?? asset.image,
         cost: (cost == null) ? asset.cost.amount : cost.amount,
-        period: (period == null)
-            ? asset.depreciationPriodOfDay.amount
-            : period.amount,
+        period: (period == null) ? asset.period.amountList : period.amountList,
         purchaseDate: purchaseDate ?? asset.purchaseDate,
         repayment:
             (repayment == null) ? asset.repayment.amount : repayment.amount);
