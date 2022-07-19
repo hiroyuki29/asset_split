@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:asset_split/src/common_widget/alert_dialog_widget.dart';
 import 'package:asset_split/src/common_widget/input_form_widget.dart';
-import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
@@ -15,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../domain/value/asset_name.dart';
 import '../domain/value/priod.dart';
+import '../use_case/asset_use_case.dart';
 
 class AddNewAssetScreen extends ConsumerStatefulWidget {
   const AddNewAssetScreen({Key? key}) : super(key: key);
@@ -26,6 +28,10 @@ class AddNewAssetScreen extends ConsumerStatefulWidget {
 
 class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
   Uint8List? image;
+  int? allPeriod;
+  int? years;
+  int? months;
+  int? days;
   final nameController = TextEditingController();
   final costController = TextEditingController();
   final periodController = TextEditingController();
@@ -74,12 +80,55 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
               textInputFormatter: FilteringTextInputFormatter.digitsOnly,
               hintText: '金額',
             ),
-            InputFormWidget(
-              nodeText: nodeText3,
-              inputController: periodController,
-              textInputType: TextInputType.number,
-              textInputFormatter: FilteringTextInputFormatter.digitsOnly,
-              hintText: '使用期間',
+            // InputFormWidget(
+            //   nodeText: nodeText3,
+            //   inputController: periodController,
+            //   textInputType: TextInputType.number,
+            //   textInputFormatter: FilteringTextInputFormatter.digitsOnly,
+            //   hintText: '使用期間',
+            // ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text('$years年$months月$days日間'),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.lightBlueAccent,
+                  ),
+                  onPressed: () async {
+                    // (BuildContext context) {
+                    Picker(
+                        adapter: PickerDataAdapter<String>(
+                          pickerdata: const JsonDecoder().convert(pickerData2),
+                          isArray: true,
+                        ),
+                        hideHeader: true,
+                        selecteds: [0, 0, 0],
+                        title: const Text("Please Select"),
+                        selectedTextStyle: const TextStyle(color: Colors.blue),
+                        cancel: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Icon(Icons.child_care)),
+                        onConfirm: (Picker picker, List value) {
+                          setState(() {
+                            years = value[0];
+                            months = value[1];
+                            days = value[2];
+                            allPeriod =
+                                value[0] * 365 + value[1] * 30 + value[2];
+                          });
+                        }).showDialog(context);
+                  },
+                  child: const Text(
+                    '期間選択',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(
               height: 10,
@@ -140,15 +189,16 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                   if (costController.text.isEmpty) {
                     throw Exception('cost error');
                   }
-                  if (periodController.text.isEmpty) {
-                    throw Exception('period error');
-                  }
-                  ref.read(assetControllerProvider.notifier).add(
+                  // if (periodController.text.isEmpty) {
+                  //   throw Exception('period error');
+                  // }
+                  ref.read(assetUseCaseProvider).add(
                         userId: currentUserId ?? 0,
                         name: AssetName(assetName: nameController.text),
                         image: image!,
                         cost: Money(double.tryParse(costController.text)!),
-                        period: Period(int.tryParse(periodController.text)!),
+                        // period: Period(int.tryParse(periodController.text)!),
+                        period: Period(days!),
                       );
                   Navigator.of(context).pop();
                 } catch (e) {
@@ -173,3 +223,103 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
     );
   }
 }
+
+// showPickerArray(BuildContext context) {
+//   Picker(
+//       adapter: PickerDataAdapter<String>(
+//         pickerdata: const JsonDecoder().convert(pickerData2),
+//         isArray: true,
+//       ),
+//       hideHeader: true,
+//       selecteds: [3, 0, 2],
+//       title: const Text("Please Select"),
+//       selectedTextStyle: const TextStyle(color: Colors.blue),
+//       cancel: TextButton(
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//           child: const Icon(Icons.child_care)),
+//       onConfirm: (Picker picker, List value) {
+//         // print(value.toString());
+//         print(value[0] * 365 + value[1] * 30 + value[2]);
+//         days =
+
+//         // print(picker.getSelectedValues());
+//       }).showDialog(context);
+// }
+
+const pickerData2 = '''
+[
+    [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+    ],
+    [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+    ],
+    [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+    ]
+]
+    ''';

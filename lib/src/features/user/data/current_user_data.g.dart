@@ -24,6 +24,7 @@ const CurrentUserDataSchema = CollectionSchema(
   linkIds: {},
   backlinkLinkNames: {},
   getId: _currentUserDataGetId,
+  setId: _currentUserDataSetId,
   getLinks: _currentUserDataGetLinks,
   attachLinks: _currentUserDataAttachLinks,
   serializeNative: _currentUserDataSerializeNative,
@@ -43,6 +44,10 @@ int? _currentUserDataGetId(CurrentUserData object) {
   }
 }
 
+void _currentUserDataSetId(CurrentUserData object, int id) {
+  object.id = id;
+}
+
 List<IsarLinkBase> _currentUserDataGetLinks(CurrentUserData object) {
   return [];
 }
@@ -56,14 +61,14 @@ void _currentUserDataSerializeNative(
     AdapterAlloc alloc) {
   var dynamicSize = 0;
   final value0 = object.userId;
-  final userId = value0;
+  final _userId = value0;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], userId);
+  writer.writeLong(offsets[0], _userId);
 }
 
 CurrentUserData _currentUserDataDeserializeNative(
@@ -72,6 +77,7 @@ CurrentUserData _currentUserDataDeserializeNative(
     IsarBinaryReader reader,
     List<int> offsets) {
   final object = CurrentUserData();
+  object.id = id;
   object.userId = reader.readLong(offsets[0]);
   return object;
 }
@@ -99,6 +105,7 @@ dynamic _currentUserDataSerializeWeb(
 CurrentUserData _currentUserDataDeserializeWeb(
     IsarCollection<CurrentUserData> collection, dynamic jsObj) {
   final object = CurrentUserData();
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
   object.userId =
       IsarNative.jsObjectGet(jsObj, 'userId') ?? double.negativeInfinity;
   return object;

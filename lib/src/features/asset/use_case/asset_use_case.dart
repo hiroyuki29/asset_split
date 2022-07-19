@@ -25,9 +25,20 @@ class AssetUseCase {
   }
 
   Future<void> add({
-    required Asset asset,
+    required int userId,
+    required AssetName name,
+    required Uint8List image,
+    required Money cost,
+    required Period period,
   }) async {
-    await assetRepository.setAsset(asset);
+    Asset newAsset = Asset.initCreate(
+      userId: userId,
+      name: name,
+      image: image,
+      cost: cost,
+      period: period,
+    );
+    assetRepository.setAsset(newAsset);
   }
 
   Future<void> remove(int assetId) async {
@@ -78,7 +89,7 @@ class AssetUseCase {
         image: image ?? asset.image,
         cost: (cost == null) ? asset.cost.amount : cost.amount,
         period: (period == null)
-            ? asset.depreciationPriodOfMonth.amount
+            ? asset.depreciationPriodOfDay.amount
             : period.amount,
         purchaseDate: purchaseDate ?? asset.purchaseDate,
         repayment:

@@ -43,6 +43,7 @@ class UserUseCase {
 
   Future<int> add(User newUser) async {
     int newUserId = await userRepository.setUser(newUser);
+    await currentUserRepository.select(newUserId);
     return newUserId;
   }
 

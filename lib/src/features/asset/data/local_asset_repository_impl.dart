@@ -89,7 +89,7 @@ class AssetRepositoryImpl implements AssetRepository {
       ..userId = asset.userId
       ..image = asset.image
       ..cost = asset.cost.amount
-      ..depreciationPriodOfMonth = asset.depreciationPriodOfMonth.amount
+      ..depreciationPriodOfDay = asset.depreciationPriodOfDay.amount
       ..purchaseDate = asset.purchaseDate
       ..repayment = asset.repayment.amount;
     await isar.writeTxn((isar) async {
@@ -128,7 +128,7 @@ class AssetRepositoryImpl implements AssetRepository {
       ..name = name
       // ..image = image
       ..cost = cost
-      ..depreciationPriodOfMonth = period
+      ..depreciationPriodOfDay = period
       ..purchaseDate = purchaseDate
       ..repayment = repayment;
 

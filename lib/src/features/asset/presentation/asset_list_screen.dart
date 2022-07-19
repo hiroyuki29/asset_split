@@ -1,5 +1,5 @@
 import 'package:asset_split/src/common_widget/async_value_widget.dart';
-import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
+import 'package:asset_split/src/features/asset/data/local_asset_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -7,6 +7,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
 import '../domain/model/asset.dart';
+import '../use_case/asset_use_case.dart';
 import 'add_new_asset_screen.dart';
 
 class AssetListScreen extends ConsumerWidget {
@@ -14,7 +15,7 @@ class AssetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<AssetList> assetList = ref.watch(assetControllerProvider);
+    final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -60,9 +61,7 @@ class AssetListScreen extends ConsumerWidget {
                         // A SlidableAction can have an icon and/or a label.
                         SlidableAction(
                           onPressed: (value) {
-                            ref
-                                .read(assetControllerProvider.notifier)
-                                .remove(asset!.id);
+                            ref.read(assetUseCaseProvider).remove(asset!.id);
                           },
                           backgroundColor: const Color(0xFFFE4A49),
                           foregroundColor: Colors.white,
@@ -131,7 +130,7 @@ class AssetListScreen extends ConsumerWidget {
                             Text(
                                 '元の金額：${costFormat.format(asset.cost.amount)}'),
                             Text(
-                                '償却期間：${asset.depreciationPriodOfMonth.amount}ヶ月'),
+                                '償却期間：${asset.depreciationPriodOfDay.amount}日'),
                             Text(
                                 '購入日：${dateFormat.format(asset.purchaseDate)}'),
                           ],
