@@ -13,7 +13,7 @@ void main() async {
   final dir = await getApplicationDocumentsDirectory();
 
   final isar = await Isar.open(
-    schemas: [
+    [
       UserDataSchema,
       AssetDataSchema,
     ],

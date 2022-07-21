@@ -1,22 +1,29 @@
-import 'package:asset_split/src/features/asset/data/local_asset_repository_impl.dart';
-import 'package:asset_split/src/features/asset/presentation/asset_controller.dart';
 import 'package:asset_split/src/features/asset/use_case/asset_use_case.dart';
 import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../common_widget/async_value_widget.dart';
 import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
 import '../../user/domain/value/money_amount.dart';
+import '../domain/local_asset_repository.dart';
 import '../domain/model/asset.dart';
 
-class AssetHomeScreen extends ConsumerWidget {
+class AssetHomeScreen extends ConsumerStatefulWidget {
   const AssetHomeScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _AssetHomeScreenState();
+}
+
+class _AssetHomeScreenState extends ConsumerState<AssetHomeScreen> {
+  int _indicatorNumber = 0;
+  final CarouselController _controller = CarouselController();
+
+  @override
+  Widget build(BuildContext context) {
     final AsyncValue<int> currentUserId = ref.watch(currentUserStateProvider);
     final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
 
@@ -46,74 +53,97 @@ class AssetHomeScreen extends ConsumerWidget {
                         ),
                       )),
                   CarouselSlider.builder(
+                    carouselController: _controller,
                     options: CarouselOptions(
-                      height: 270,
-                      autoPlay: true,
-                    ),
+                        height: 250,
+                        autoPlay: false,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            _indicatorNumber = index;
+                          });
+                        }),
                     itemCount: assets.list.length,
                     itemBuilder: (context, itemIndex, pageViewIndex) {
                       final asset = assets.list[itemIndex];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onLongPress: () {
-                            ref.read(assetUseCaseProvider).remove(asset!.id);
-                          },
-                          child: Column(
-                            children: [
-                              Stack(
-                                alignment: AlignmentDirectional.topStart,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(20)),
-                                    child: SizedBox(
-                                      child: Image.memory(asset!.image),
+                        child: Stack(
+                          alignment: AlignmentDirectional.topStart,
+                          children: [
+                            ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(20)),
+                              child: SizedBox(
+                                child: Container(
+                                  width: 280,
+                                  height: 280,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: Image.memory(asset!.image).image,
                                     ),
                                   ),
-                                  Positioned(
-                                    top: 10,
-                                    left: 10,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(10)),
-                                        color: Colors.white.withOpacity(0.5),
-                                      ),
-                                      child: Text(
-                                        asset.name.assetName,
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    right: 10,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(10)),
-                                        color: Colors.white.withOpacity(0.5),
-                                      ),
-                                      child: Text(
-                                          '残りの金額：${costFormat.format(asset.balanceAtNow().amount)}円'),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                              // Text(
-                              //     '元の金額：${costFormat.format(asset.cost.amount)}'),
-                              // Text('償却期間：${asset.depreciationPriodOfMonth}ヶ月'),
-                              // Text(
-                              //     '購入日：${dateFormat.format(asset.purchaseDate)}'),
-                            ],
-                          ),
+                            ),
+                            Positioned(
+                              top: 10,
+                              left: 10,
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                                child: Text(
+                                  asset.name.assetName,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 10,
+                              right: 10,
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                                child: Text(
+                                    '残りの金額：${costFormat.format(asset.balanceAtNow().amount)}円'),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:
+                        assetList.value!.list.asMap().entries.map((entry) {
+                      return GestureDetector(
+                        onTap: () => _controller.animateToPage(entry.key),
+                        child: Container(
+                          width: 12.0,
+                          height: 12.0,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 4.0),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: (Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black)
+                                  .withOpacity(_indicatorNumber == entry.key
+                                      ? 0.9
+                                      : 0.4)),
+                        ),
+                      );
+                    }).toList(),
                   ),
                   const SizedBox(
                     height: 20,

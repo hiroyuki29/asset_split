@@ -6,18 +6,19 @@ part of 'current_user_data.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings
 
 extension GetCurrentUserDataCollection on Isar {
-  IsarCollection<CurrentUserData> get currentUserDatas => getCollection();
+  IsarCollection<CurrentUserData> get currentUserDatas => collection();
 }
 
 const CurrentUserDataSchema = CollectionSchema(
-  name: 'CurrentUserData',
+  name: r'CurrentUserData',
   schema:
-      '{"name":"CurrentUserData","idName":"id","properties":[{"name":"userId","type":"Long"}],"indexes":[],"links":[]}',
-  idName: 'id',
-  propertyIds: {'userId': 0},
+      r'{"name":"CurrentUserData","idName":"id","properties":[{"name":"userId","type":"Long"}],"indexes":[],"links":[]}',
+  idName: r'id',
+  propertyIds: {r'userId': 0},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -33,7 +34,7 @@ const CurrentUserDataSchema = CollectionSchema(
   serializeWeb: _currentUserDataSerializeWeb,
   deserializeWeb: _currentUserDataDeserializeWeb,
   deserializePropWeb: _currentUserDataDeserializePropWeb,
-  version: 3,
+  version: 4,
 );
 
 int? _currentUserDataGetId(CurrentUserData object) {
@@ -48,27 +49,25 @@ void _currentUserDataSetId(CurrentUserData object, int id) {
   object.id = id;
 }
 
-List<IsarLinkBase> _currentUserDataGetLinks(CurrentUserData object) {
+List<IsarLinkBase<dynamic>> _currentUserDataGetLinks(CurrentUserData object) {
   return [];
 }
 
 void _currentUserDataSerializeNative(
     IsarCollection<CurrentUserData> collection,
-    IsarRawObject rawObj,
+    IsarCObject cObj,
     CurrentUserData object,
     int staticSize,
     List<int> offsets,
     AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.userId;
-  final _userId = value0;
-  final size = staticSize + dynamicSize;
+  final size = (staticSize) as int;
+  cObj.buffer = alloc(size);
+  cObj.buffer_length = size;
 
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final buffer = IsarNative.bufAsBytes(cObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeLong(offsets[0], _userId);
+  writer.writeHeader();
+  writer.writeLong(offsets[0], object.userId);
 }
 
 CurrentUserData _currentUserDataDeserializeNative(
@@ -90,47 +89,48 @@ P _currentUserDataDeserializePropNative<P>(
     case 0:
       return (reader.readLong(offset)) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Illegal propertyIndex');
   }
 }
 
-dynamic _currentUserDataSerializeWeb(
+Object _currentUserDataSerializeWeb(
     IsarCollection<CurrentUserData> collection, CurrentUserData object) {
   final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'userId', object.userId);
+  IsarNative.jsObjectSet(jsObj, r'id', object.id);
+  IsarNative.jsObjectSet(jsObj, r'userId', object.userId);
   return jsObj;
 }
 
 CurrentUserData _currentUserDataDeserializeWeb(
-    IsarCollection<CurrentUserData> collection, dynamic jsObj) {
+    IsarCollection<CurrentUserData> collection, Object jsObj) {
   final object = CurrentUserData();
-  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-  object.userId =
-      IsarNative.jsObjectGet(jsObj, 'userId') ?? double.negativeInfinity;
+  object.id = IsarNative.jsObjectGet(jsObj, r'id');
+  object.userId = IsarNative.jsObjectGet(jsObj, r'userId') ??
+      (double.negativeInfinity as int);
   return object;
 }
 
 P _currentUserDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-          as P;
-    case 'userId':
-      return (IsarNative.jsObjectGet(jsObj, 'userId') ??
-          double.negativeInfinity) as P;
+    case r'id':
+      return (IsarNative.jsObjectGet(jsObj, r'id')) as P;
+    case r'userId':
+      return (IsarNative.jsObjectGet(jsObj, r'userId') ??
+          (double.negativeInfinity as int)) as P;
     default:
-      throw 'Illegal propertyName';
+      throw IsarError('Illegal propertyName');
   }
 }
 
 void _currentUserDataAttachLinks(
-    IsarCollection col, int id, CurrentUserData object) {}
+    IsarCollection<dynamic> col, int id, CurrentUserData object) {}
 
 extension CurrentUserDataQueryWhereSort
     on QueryBuilder<CurrentUserData, CurrentUserData, QWhere> {
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
@@ -138,44 +138,54 @@ extension CurrentUserDataQueryWhere
     on QueryBuilder<CurrentUserData, CurrentUserData, QWhereClause> {
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterWhereClause> idEqualTo(
       int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterWhereClause>
       idNotEqualTo(int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      );
-    }
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterWhereClause>
       idGreaterThan(int id, {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterWhereClause> idLessThan(
       int id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterWhereClause> idBetween(
@@ -184,24 +194,36 @@ extension CurrentUserDataQueryWhere
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
 extension CurrentUserDataQueryFilter
     on QueryBuilder<CurrentUserData, CurrentUserData, QFilterCondition> {
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
+      idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
       idEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
@@ -209,12 +231,13 @@ extension CurrentUserDataQueryFilter
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
@@ -222,12 +245,13 @@ extension CurrentUserDataQueryFilter
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
@@ -237,22 +261,25 @@ extension CurrentUserDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
       userIdEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'userId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
@@ -260,12 +287,13 @@ extension CurrentUserDataQueryFilter
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'userId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
@@ -273,12 +301,13 @@ extension CurrentUserDataQueryFilter
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'userId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterFilterCondition>
@@ -288,13 +317,15 @@ extension CurrentUserDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'userId',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
@@ -303,62 +334,68 @@ extension CurrentUserDataQueryLinks
 
 extension CurrentUserDataQueryWhereSortBy
     on QueryBuilder<CurrentUserData, CurrentUserData, QSortBy> {
-  QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
-  }
-
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy> sortByUserId() {
-    return addSortByInternal('userId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy>
       sortByUserIdDesc() {
-    return addSortByInternal('userId', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
+    });
   }
 }
 
 extension CurrentUserDataQueryWhereSortThenBy
     on QueryBuilder<CurrentUserData, CurrentUserData, QSortThenBy> {
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy> thenByUserId() {
-    return addSortByInternal('userId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
   }
 
   QueryBuilder<CurrentUserData, CurrentUserData, QAfterSortBy>
       thenByUserIdDesc() {
-    return addSortByInternal('userId', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
+    });
   }
 }
 
 extension CurrentUserDataQueryWhereDistinct
     on QueryBuilder<CurrentUserData, CurrentUserData, QDistinct> {
-  QueryBuilder<CurrentUserData, CurrentUserData, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
-  }
-
   QueryBuilder<CurrentUserData, CurrentUserData, QDistinct> distinctByUserId() {
-    return addDistinctByInternal('userId');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userId');
+    });
   }
 }
 
 extension CurrentUserDataQueryProperty
     on QueryBuilder<CurrentUserData, CurrentUserData, QQueryProperty> {
   QueryBuilder<CurrentUserData, int, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
   }
 
   QueryBuilder<CurrentUserData, int, QQueryOperations> userIdProperty() {
-    return addPropertyNameInternal('userId');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userId');
+    });
   }
 }

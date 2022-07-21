@@ -33,7 +33,7 @@ class User {
 
   factory User.fromUserData(UserData data) {
     return User(
-      id: data.id,
+      id: data.id!,
       name: UserName(name: data.name),
       createDateTime: data.createDateTime,
       sumAmount: Money(data.sumAmount),

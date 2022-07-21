@@ -4,6 +4,7 @@ part 'current_user_data.g.dart';
 
 @Collection()
 class CurrentUserData {
-  int id = Isar.autoIncrement;
+  // final int id = Isar.autoIncrement;
+  Id? id;
   late int userId;
 }

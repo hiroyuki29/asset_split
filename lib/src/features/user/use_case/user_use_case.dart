@@ -47,8 +47,10 @@ class UserUseCase {
     return newUserId;
   }
 
-  Future<void> remove(int userId) async {
-    await userRepository.removeUser(userId);
+  Future<int?> remove(int userId) async {
+    int? nextUserId = await userRepository.removeUser(userId) ?? 0;
+    await currentUserRepository.select(nextUserId);
+    return nextUserId;
   }
 
   Future<void> addPayment({required User user, required Money add}) async {

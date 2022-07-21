@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:asset_split/src/common_widget/alert_dialog_widget.dart';
 import 'package:asset_split/src/common_widget/input_form_widget.dart';
+import 'package:asset_split/src/features/asset/presentation/asset_list_screen.dart';
 import 'package:asset_split/src/features/user/presentation/current_user_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,17 +29,15 @@ class AddNewAssetScreen extends ConsumerStatefulWidget {
 
 class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
   Uint8List? image;
-  int? allPeriod;
-  int? years;
-  int? months;
-  int? days;
+  // int allPeriod;
+  int years = 0;
+  int months = 0;
+  int days = 0;
   final nameController = TextEditingController();
   final costController = TextEditingController();
-  final periodController = TextEditingController();
 
   final FocusNode nodeText1 = FocusNode();
   final FocusNode nodeText2 = FocusNode();
-  final FocusNode nodeText3 = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -80,51 +79,135 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
               textInputFormatter: FilteringTextInputFormatter.digitsOnly,
               hintText: '金額',
             ),
-            // InputFormWidget(
-            //   nodeText: nodeText3,
-            //   inputController: periodController,
-            //   textInputType: TextInputType.number,
-            //   textInputFormatter: FilteringTextInputFormatter.digitsOnly,
-            //   hintText: '使用期間',
-            // ),
+            const SizedBox(
+              height: 5,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('$years年$months月$days日間'),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.lightBlueAccent,
+                Expanded(
+                  flex: 7,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    height: 48,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Colors.lightBlueAccent, width: 1.0),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextForPeriod(
+                      year: years,
+                      month: months,
+                      day: days,
+                    ),
                   ),
-                  onPressed: () async {
-                    // (BuildContext context) {
-                    Picker(
-                        adapter: PickerDataAdapter<String>(
-                          pickerdata: const JsonDecoder().convert(pickerData2),
-                          isArray: true,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Center(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.lightBlueAccent,
+                      ),
+                      onPressed: () async {
+                        // (BuildContext context) {
+                        Picker(
+                            adapter: PickerDataAdapter<String>(
+                              pickerdata:
+                                  const JsonDecoder().convert(pickerData2),
+                              isArray: true,
+                            ),
+                            hideHeader: true,
+                            selecteds: [0, 0, 0],
+                            title: const Text("返済期間:年-月-日"),
+                            selectedTextStyle:
+                                const TextStyle(color: Colors.blue),
+                            onConfirm: (Picker picker, List value) {
+                              setState(() {
+                                years = value[0];
+                                months = value[1];
+                                days = value[2];
+                              });
+                            }).showDialog(context);
+                      },
+                      child: const Text(
+                        '期間選択',
+                        style: TextStyle(
+                          color: Colors.white,
                         ),
-                        hideHeader: true,
-                        selecteds: [0, 0, 0],
-                        title: const Text("Please Select"),
-                        selectedTextStyle: const TextStyle(color: Colors.blue),
-                        cancel: TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Icon(Icons.child_care)),
-                        onConfirm: (Picker picker, List value) {
-                          setState(() {
-                            years = value[0];
-                            months = value[1];
-                            days = value[2];
-                            allPeriod =
-                                value[0] * 365 + value[1] * 30 + value[2];
-                          });
-                        }).showDialog(context);
-                  },
-                  child: const Text(
-                    '期間選択',
-                    style: TextStyle(
-                      color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                (image != null)
+                    ? Expanded(
+                        flex: 7,
+                        child: Center(
+                          child: Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                fit: BoxFit.fitHeight,
+                                image: Image.memory(image!).image,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const Expanded(
+                        flex: 7,
+                        child: SizedBox(
+                          child: Center(child: Text('No Image')),
+                        )),
+                Expanded(
+                  flex: 3,
+                  child: Center(
+                    child: SizedBox(
+                      // width: 100,
+                      height: 40,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.lightBlueAccent,
+                        ),
+                        onPressed: () async {
+                          try {
+                            ImagePicker? imagePicker = ImagePicker();
+                            final XFile? pickedFile = await imagePicker
+                                .pickImage(source: ImageSource.gallery);
+                            final path =
+                                (await getApplicationDocumentsDirectory()).path;
+                            final String fileName = basename(pickedFile!.path);
+                            final String imagePath = '$path/$fileName';
+                            File imageFile = File(imagePath);
+                            await imageFile
+                                .writeAsBytes(await pickedFile.readAsBytes());
+                            ByteData byte = await rootBundle.load(imagePath);
+                            Uint8List pickImage = byte.buffer.asUint8List();
+                            setState(
+                              () {
+                                print('call setstate');
+                                image = pickImage;
+                              },
+                            );
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        child: const Text(
+                          'image選択',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -139,67 +222,18 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
               ),
               onPressed: () async {
                 try {
-                  ImagePicker? imagePicker = ImagePicker();
-                  final XFile? pickedFile =
-                      await imagePicker.pickImage(source: ImageSource.gallery);
-                  final path = (await getApplicationDocumentsDirectory()).path;
-                  final String fileName = basename(pickedFile!.path);
-                  final String imagePath = '$path/$fileName';
-                  File imageFile = File(imagePath);
-                  await imageFile.writeAsBytes(await pickedFile.readAsBytes());
-                  ByteData byte = await rootBundle.load(imagePath);
-                  Uint8List pickImage = byte.buffer.asUint8List();
-                  setState(
-                    () {
-                      print('call setstate');
-                      image = pickImage;
-                    },
-                  );
-                } catch (e) {
-                  print(e);
-                }
-              },
-              child: const Text(
-                'image選択',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            (image != null)
-                ? Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.fitHeight,
-                        image: Image.memory(image!).image,
-                      ),
-                    ),
-                  )
-                : Container(),
-            const SizedBox(
-              height: 10,
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
-              ),
-              onPressed: () async {
-                try {
                   if (costController.text.isEmpty) {
                     throw Exception('cost error');
                   }
-                  // if (periodController.text.isEmpty) {
-                  //   throw Exception('period error');
-                  // }
+                  if (years == 0 && months == 0 && days == 0) {
+                    throw Exception('period error');
+                  }
                   ref.read(assetUseCaseProvider).add(
                         userId: currentUserId ?? 0,
                         name: AssetName(assetName: nameController.text),
                         image: image!,
                         cost: Money(double.tryParse(costController.text)!),
-                        // period: Period(int.tryParse(periodController.text)!),
-                        period:
-                            Period(year: years!, month: months!, day: days!),
+                        period: Period(year: years, month: months, day: days),
                       );
                   Navigator.of(context).pop();
                 } catch (e) {
@@ -224,30 +258,6 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
     );
   }
 }
-
-// showPickerArray(BuildContext context) {
-//   Picker(
-//       adapter: PickerDataAdapter<String>(
-//         pickerdata: const JsonDecoder().convert(pickerData2),
-//         isArray: true,
-//       ),
-//       hideHeader: true,
-//       selecteds: [3, 0, 2],
-//       title: const Text("Please Select"),
-//       selectedTextStyle: const TextStyle(color: Colors.blue),
-//       cancel: TextButton(
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//           child: const Icon(Icons.child_care)),
-//       onConfirm: (Picker picker, List value) {
-//         // print(value.toString());
-//         print(value[0] * 365 + value[1] * 30 + value[2]);
-//         days =
-
-//         // print(picker.getSelectedValues());
-//       }).showDialog(context);
-// }
 
 const pickerData2 = '''
 [

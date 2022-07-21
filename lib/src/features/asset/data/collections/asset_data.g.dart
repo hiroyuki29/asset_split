@@ -6,27 +6,28 @@ part of 'asset_data.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings
 
 extension GetAssetDataCollection on Isar {
-  IsarCollection<AssetData> get assetDatas => getCollection();
+  IsarCollection<AssetData> get assetDatas => collection();
 }
 
 const AssetDataSchema = CollectionSchema(
-  name: 'AssetData',
+  name: r'AssetData',
   schema:
-      '{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Double"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"period","type":"LongList"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Double"},{"name":"userId","type":"Long"}],"indexes":[],"links":[]}',
-  idName: 'id',
+      r'{"name":"AssetData","idName":"id","properties":[{"name":"cost","type":"Double"},{"name":"image","type":"ByteList"},{"name":"name","type":"String"},{"name":"period","type":"LongList"},{"name":"purchaseDate","type":"Long"},{"name":"repayment","type":"Double"},{"name":"userId","type":"Long"}],"indexes":[],"links":[]}',
+  idName: r'id',
   propertyIds: {
-    'cost': 0,
-    'image': 1,
-    'name': 2,
-    'period': 3,
-    'purchaseDate': 4,
-    'repayment': 5,
-    'userId': 6
+    r'cost': 0,
+    r'image': 1,
+    r'name': 2,
+    r'period': 3,
+    r'purchaseDate': 4,
+    r'repayment': 5,
+    r'userId': 6
   },
-  listProperties: {'image', 'period'},
+  listProperties: {r'image', r'period'},
   indexIds: {},
   indexValueTypes: {},
   linkIds: {},
@@ -41,7 +42,7 @@ const AssetDataSchema = CollectionSchema(
   serializeWeb: _assetDataSerializeWeb,
   deserializeWeb: _assetDataDeserializeWeb,
   deserializePropWeb: _assetDataDeserializePropWeb,
-  version: 3,
+  version: 4,
 );
 
 int? _assetDataGetId(AssetData object) {
@@ -56,48 +57,38 @@ void _assetDataSetId(AssetData object, int id) {
   object.id = id;
 }
 
-List<IsarLinkBase> _assetDataGetLinks(AssetData object) {
+List<IsarLinkBase<dynamic>> _assetDataGetLinks(AssetData object) {
   return [];
 }
 
 void _assetDataSerializeNative(
     IsarCollection<AssetData> collection,
-    IsarRawObject rawObj,
+    IsarCObject cObj,
     AssetData object,
     int staticSize,
     List<int> offsets,
     AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.cost;
-  final _cost = value0;
-  final value1 = object.image;
-  dynamicSize += (value1.length) * 1;
-  final _image = value1;
-  final value2 = object.name;
-  final _name = IsarBinaryWriter.utf8Encoder.convert(value2);
-  dynamicSize += (_name.length) as int;
-  final value3 = object.period;
-  dynamicSize += (value3.length) * 8;
-  final _period = value3;
-  final value4 = object.purchaseDate;
-  final _purchaseDate = value4;
-  final value5 = object.repayment;
-  final _repayment = value5;
-  final value6 = object.userId;
-  final _userId = value6;
-  final size = staticSize + dynamicSize;
+  final name$Bytes = IsarBinaryWriter.utf8Encoder.convert(object.name);
+  final size = (staticSize +
+      3 +
+      (object.image.length) +
+      3 +
+      (name$Bytes.length) +
+      3 +
+      (object.period.length) * 8) as int;
+  cObj.buffer = alloc(size);
+  cObj.buffer_length = size;
 
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final buffer = IsarNative.bufAsBytes(cObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeDouble(offsets[0], _cost);
-  writer.writeBytes(offsets[1], _image);
-  writer.writeBytes(offsets[2], _name);
-  writer.writeLongList(offsets[3], _period);
-  writer.writeDateTime(offsets[4], _purchaseDate);
-  writer.writeDouble(offsets[5], _repayment);
-  writer.writeLong(offsets[6], _userId);
+  writer.writeHeader();
+  writer.writeDouble(offsets[0], object.cost);
+  writer.writeByteList(offsets[1], object.image);
+  writer.writeByteList(offsets[2], name$Bytes);
+  writer.writeLongList(offsets[3], object.period);
+  writer.writeDateTime(offsets[4], object.purchaseDate);
+  writer.writeDouble(offsets[5], object.repayment);
+  writer.writeLong(offsets[6], object.userId);
 }
 
 AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
@@ -105,7 +96,7 @@ AssetData _assetDataDeserializeNative(IsarCollection<AssetData> collection,
   final object = AssetData();
   object.cost = reader.readDouble(offsets[0]);
   object.id = id;
-  object.image = reader.readBytes(offsets[1]);
+  object.image = reader.readByteList(offsets[1]);
   object.name = reader.readString(offsets[2]);
   object.period = reader.readLongList(offsets[3]) ?? [];
   object.purchaseDate = reader.readDateTime(offsets[4]);
@@ -122,7 +113,7 @@ P _assetDataDeserializePropNative<P>(
     case 0:
       return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readBytes(offset)) as P;
+      return (reader.readByteList(offset)) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
@@ -134,135 +125,147 @@ P _assetDataDeserializePropNative<P>(
     case 6:
       return (reader.readLong(offset)) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Illegal propertyIndex');
   }
 }
 
-dynamic _assetDataSerializeWeb(
+Object _assetDataSerializeWeb(
     IsarCollection<AssetData> collection, AssetData object) {
   final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'cost', object.cost);
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'image', object.image);
-  IsarNative.jsObjectSet(jsObj, 'name', object.name);
-  IsarNative.jsObjectSet(jsObj, 'period', object.period);
-  IsarNative.jsObjectSet(jsObj, 'purchaseDate',
+  IsarNative.jsObjectSet(jsObj, r'cost', object.cost);
+  IsarNative.jsObjectSet(jsObj, r'id', object.id);
+  IsarNative.jsObjectSet(jsObj, r'image', object.image);
+  IsarNative.jsObjectSet(jsObj, r'name', object.name);
+  IsarNative.jsObjectSet(jsObj, r'period', object.period);
+  IsarNative.jsObjectSet(jsObj, r'purchaseDate',
       object.purchaseDate.toUtc().millisecondsSinceEpoch);
-  IsarNative.jsObjectSet(jsObj, 'repayment', object.repayment);
-  IsarNative.jsObjectSet(jsObj, 'userId', object.userId);
+  IsarNative.jsObjectSet(jsObj, r'repayment', object.repayment);
+  IsarNative.jsObjectSet(jsObj, r'userId', object.userId);
   return jsObj;
 }
 
 AssetData _assetDataDeserializeWeb(
-    IsarCollection<AssetData> collection, dynamic jsObj) {
+    IsarCollection<AssetData> collection, Object jsObj) {
   final object = AssetData();
   object.cost =
-      IsarNative.jsObjectGet(jsObj, 'cost') ?? double.negativeInfinity;
-  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-  object.image = IsarNative.jsObjectGet(jsObj, 'image') ?? Uint8List(0);
-  object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
-  object.period = (IsarNative.jsObjectGet(jsObj, 'period') as List?)
-          ?.map((e) => e ?? double.negativeInfinity)
+      IsarNative.jsObjectGet(jsObj, r'cost') ?? double.negativeInfinity;
+  object.id = IsarNative.jsObjectGet(jsObj, r'id');
+  object.image = IsarNative.jsObjectGet(jsObj, r'image') ?? Uint8List(0);
+  object.name = IsarNative.jsObjectGet(jsObj, r'name') ?? '';
+  object.period = (IsarNative.jsObjectGet(jsObj, r'period') as List?)
+          ?.map((e) => e ?? (double.negativeInfinity as int))
           .toList()
           .cast<int>() ??
       [];
-  object.purchaseDate = IsarNative.jsObjectGet(jsObj, 'purchaseDate') != null
+  object.purchaseDate = IsarNative.jsObjectGet(jsObj, r'purchaseDate') != null
       ? DateTime.fromMillisecondsSinceEpoch(
-              IsarNative.jsObjectGet(jsObj, 'purchaseDate'),
+              IsarNative.jsObjectGet(jsObj, r'purchaseDate') as int,
               isUtc: true)
           .toLocal()
       : DateTime.fromMillisecondsSinceEpoch(0);
   object.repayment =
-      IsarNative.jsObjectGet(jsObj, 'repayment') ?? double.negativeInfinity;
-  object.userId =
-      IsarNative.jsObjectGet(jsObj, 'userId') ?? double.negativeInfinity;
+      IsarNative.jsObjectGet(jsObj, r'repayment') ?? double.negativeInfinity;
+  object.userId = IsarNative.jsObjectGet(jsObj, r'userId') ??
+      (double.negativeInfinity as int);
   return object;
 }
 
 P _assetDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
-    case 'cost':
-      return (IsarNative.jsObjectGet(jsObj, 'cost') ?? double.negativeInfinity)
+    case r'cost':
+      return (IsarNative.jsObjectGet(jsObj, r'cost') ?? double.negativeInfinity)
           as P;
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-          as P;
-    case 'image':
-      return (IsarNative.jsObjectGet(jsObj, 'image') ?? Uint8List(0)) as P;
-    case 'name':
-      return (IsarNative.jsObjectGet(jsObj, 'name') ?? '') as P;
-    case 'period':
-      return ((IsarNative.jsObjectGet(jsObj, 'period') as List?)
-              ?.map((e) => e ?? double.negativeInfinity)
+    case r'id':
+      return (IsarNative.jsObjectGet(jsObj, r'id')) as P;
+    case r'image':
+      return (IsarNative.jsObjectGet(jsObj, r'image') ?? Uint8List(0)) as P;
+    case r'name':
+      return (IsarNative.jsObjectGet(jsObj, r'name') ?? '') as P;
+    case r'period':
+      return ((IsarNative.jsObjectGet(jsObj, r'period') as List?)
+              ?.map((e) => e ?? (double.negativeInfinity as int))
               .toList()
               .cast<int>() ??
           []) as P;
-    case 'purchaseDate':
-      return (IsarNative.jsObjectGet(jsObj, 'purchaseDate') != null
+    case r'purchaseDate':
+      return (IsarNative.jsObjectGet(jsObj, r'purchaseDate') != null
           ? DateTime.fromMillisecondsSinceEpoch(
-                  IsarNative.jsObjectGet(jsObj, 'purchaseDate'),
+                  IsarNative.jsObjectGet(jsObj, r'purchaseDate') as int,
                   isUtc: true)
               .toLocal()
           : DateTime.fromMillisecondsSinceEpoch(0)) as P;
-    case 'repayment':
-      return (IsarNative.jsObjectGet(jsObj, 'repayment') ??
+    case r'repayment':
+      return (IsarNative.jsObjectGet(jsObj, r'repayment') ??
           double.negativeInfinity) as P;
-    case 'userId':
-      return (IsarNative.jsObjectGet(jsObj, 'userId') ??
-          double.negativeInfinity) as P;
+    case r'userId':
+      return (IsarNative.jsObjectGet(jsObj, r'userId') ??
+          (double.negativeInfinity as int)) as P;
     default:
-      throw 'Illegal propertyName';
+      throw IsarError('Illegal propertyName');
   }
 }
 
-void _assetDataAttachLinks(IsarCollection col, int id, AssetData object) {}
+void _assetDataAttachLinks(
+    IsarCollection<dynamic> col, int id, AssetData object) {}
 
 extension AssetDataQueryWhereSort
     on QueryBuilder<AssetData, AssetData, QWhere> {
   QueryBuilder<AssetData, AssetData, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
 extension AssetDataQueryWhere
     on QueryBuilder<AssetData, AssetData, QWhereClause> {
   QueryBuilder<AssetData, AssetData, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterWhereClause> idNotEqualTo(int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      );
-    }
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterWhereClause> idGreaterThan(int id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterWhereClause> idLessThan(int id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterWhereClause> idBetween(
@@ -271,12 +274,14 @@ extension AssetDataQueryWhere
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
@@ -284,66 +289,79 @@ extension AssetDataQueryFilter
     on QueryBuilder<AssetData, AssetData, QFilterCondition> {
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> costGreaterThan(
       double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: false,
-      property: 'cost',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'cost',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> costLessThan(
       double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: false,
-      property: 'cost',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        property: r'cost',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> costBetween(
       double lower, double upper) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'cost',
-      lower: lower,
-      includeLower: false,
-      upper: upper,
-      includeUpper: false,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'cost',
+        lower: lower,
+        includeLower: false,
+        upper: upper,
+        includeUpper: false,
+      ));
+    });
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> idEqualTo(
       int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> idGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> idLessThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> idBetween(
@@ -352,25 +370,28 @@ extension AssetDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameGreaterThan(
@@ -378,13 +399,14 @@ extension AssetDataQueryFilter
     bool caseSensitive = true,
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameLessThan(
@@ -392,13 +414,14 @@ extension AssetDataQueryFilter
     bool caseSensitive = true,
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameBetween(
@@ -408,118 +431,132 @@ extension AssetDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'name',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'name',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> nameMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'name',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> periodAnyEqualTo(
-      int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'period',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'name',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
-      periodAnyGreaterThan(
+      periodElementEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'period',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
+      periodElementGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'period',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'period',
+        value: value,
+      ));
+    });
   }
 
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> periodAnyLessThan(
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
+      periodElementLessThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'period',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'period',
+        value: value,
+      ));
+    });
   }
 
-  QueryBuilder<AssetData, AssetData, QAfterFilterCondition> periodAnyBetween(
+  QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
+      periodElementBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'period',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'period',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> purchaseDateEqualTo(
       DateTime value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'purchaseDate',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'purchaseDate',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
@@ -527,12 +564,13 @@ extension AssetDataQueryFilter
     DateTime value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'purchaseDate',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'purchaseDate',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
@@ -540,12 +578,13 @@ extension AssetDataQueryFilter
     DateTime value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'purchaseDate',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'purchaseDate',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> purchaseDateBetween(
@@ -554,77 +593,84 @@ extension AssetDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'purchaseDate',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'purchaseDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition>
       repaymentGreaterThan(double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: false,
-      property: 'repayment',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'repayment',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> repaymentLessThan(
       double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: false,
-      property: 'repayment',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        property: r'repayment',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> repaymentBetween(
       double lower, double upper) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'repayment',
-      lower: lower,
-      includeLower: false,
-      upper: upper,
-      includeUpper: false,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'repayment',
+        lower: lower,
+        includeLower: false,
+        upper: upper,
+        includeUpper: false,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdEqualTo(
       int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'userId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'userId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdLessThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'userId',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterFilterCondition> userIdBetween(
@@ -633,13 +679,15 @@ extension AssetDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'userId',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
@@ -649,164 +697,234 @@ extension AssetDataQueryLinks
 extension AssetDataQueryWhereSortBy
     on QueryBuilder<AssetData, AssetData, QSortBy> {
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByCost() {
-    return addSortByInternal('cost', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cost', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByCostDesc() {
-    return addSortByInternal('cost', Sort.desc);
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cost', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByName() {
-    return addSortByInternal('name', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByNameDesc() {
-    return addSortByInternal('name', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByPurchaseDate() {
-    return addSortByInternal('purchaseDate', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseDate', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByPurchaseDateDesc() {
-    return addSortByInternal('purchaseDate', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseDate', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByRepayment() {
-    return addSortByInternal('repayment', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'repayment', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByRepaymentDesc() {
-    return addSortByInternal('repayment', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'repayment', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByUserId() {
-    return addSortByInternal('userId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> sortByUserIdDesc() {
-    return addSortByInternal('userId', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
+    });
   }
 }
 
 extension AssetDataQueryWhereSortThenBy
     on QueryBuilder<AssetData, AssetData, QSortThenBy> {
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByCost() {
-    return addSortByInternal('cost', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cost', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByCostDesc() {
-    return addSortByInternal('cost', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cost', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByName() {
-    return addSortByInternal('name', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByNameDesc() {
-    return addSortByInternal('name', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByPurchaseDate() {
-    return addSortByInternal('purchaseDate', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseDate', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByPurchaseDateDesc() {
-    return addSortByInternal('purchaseDate', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseDate', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByRepayment() {
-    return addSortByInternal('repayment', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'repayment', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByRepaymentDesc() {
-    return addSortByInternal('repayment', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'repayment', Sort.desc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByUserId() {
-    return addSortByInternal('userId', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QAfterSortBy> thenByUserIdDesc() {
-    return addSortByInternal('userId', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
+    });
   }
 }
 
 extension AssetDataQueryWhereDistinct
     on QueryBuilder<AssetData, AssetData, QDistinct> {
   QueryBuilder<AssetData, AssetData, QDistinct> distinctByCost() {
-    return addDistinctByInternal('cost');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cost');
+    });
   }
 
-  QueryBuilder<AssetData, AssetData, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
+  QueryBuilder<AssetData, AssetData, QDistinct> distinctByImage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'image');
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('name', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<AssetData, AssetData, QDistinct> distinctByPeriod() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'period');
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QDistinct> distinctByPurchaseDate() {
-    return addDistinctByInternal('purchaseDate');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'purchaseDate');
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QDistinct> distinctByRepayment() {
-    return addDistinctByInternal('repayment');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'repayment');
+    });
   }
 
   QueryBuilder<AssetData, AssetData, QDistinct> distinctByUserId() {
-    return addDistinctByInternal('userId');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userId');
+    });
   }
 }
 
 extension AssetDataQueryProperty
     on QueryBuilder<AssetData, AssetData, QQueryProperty> {
-  QueryBuilder<AssetData, double, QQueryOperations> costProperty() {
-    return addPropertyNameInternal('cost');
+  QueryBuilder<AssetData, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
   }
 
-  QueryBuilder<AssetData, int, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+  QueryBuilder<AssetData, double, QQueryOperations> costProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cost');
+    });
   }
 
   QueryBuilder<AssetData, Uint8List, QQueryOperations> imageProperty() {
-    return addPropertyNameInternal('image');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'image');
+    });
   }
 
   QueryBuilder<AssetData, String, QQueryOperations> nameProperty() {
-    return addPropertyNameInternal('name');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
+    });
   }
 
   QueryBuilder<AssetData, List<int>, QQueryOperations> periodProperty() {
-    return addPropertyNameInternal('period');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'period');
+    });
   }
 
   QueryBuilder<AssetData, DateTime, QQueryOperations> purchaseDateProperty() {
-    return addPropertyNameInternal('purchaseDate');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'purchaseDate');
+    });
   }
 
   QueryBuilder<AssetData, double, QQueryOperations> repaymentProperty() {
-    return addPropertyNameInternal('repayment');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'repayment');
+    });
   }
 
   QueryBuilder<AssetData, int, QQueryOperations> userIdProperty() {
-    return addPropertyNameInternal('userId');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userId');
+    });
   }
 }

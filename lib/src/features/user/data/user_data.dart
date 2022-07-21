@@ -4,7 +4,8 @@ part 'user_data.g.dart';
 
 @Collection()
 class UserData {
-  int id = Isar.autoIncrement;
+  // final int id = Isar.autoIncrement;
+  Id? id;
   late String name;
   late DateTime createDateTime;
   late double sumAmount;

@@ -48,7 +48,7 @@ class Asset {
 
   factory Asset.fromAssetData(AssetData data) {
     return Asset(
-      id: data.id,
+      id: data.id!,
       userId: data.userId,
       name: AssetName(assetName: data.name),
       image: data.image,

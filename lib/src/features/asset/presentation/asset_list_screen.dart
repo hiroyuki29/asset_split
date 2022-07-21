@@ -1,11 +1,11 @@
 import 'package:asset_split/src/common_widget/async_value_widget.dart';
-import 'package:asset_split/src/features/asset/data/local_asset_repository_impl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
 import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
+import '../../user/presentation/current_user_state.dart';
+import '../domain/local_asset_repository.dart';
 import '../domain/model/asset.dart';
 import '../use_case/asset_use_case.dart';
 import 'add_new_asset_screen.dart';
@@ -15,6 +15,7 @@ class AssetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final AsyncValue<int> currentUserId = ref.watch(currentUserStateProvider);
     final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
 
     return Scaffold(
@@ -48,99 +49,127 @@ class AssetListScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.headline4,
                 ),
               )
-            : ListView.builder(
-                itemCount: assets.list.length,
-                itemBuilder: (context, itemIndex) {
-                  final asset = assets.list[itemIndex];
-                  return Slidable(
-                    startActionPane: ActionPane(
-                      // A motion is a widget used to control how the pane animates.
-                      motion: const ScrollMotion(),
-                      // All actions are defined in the children parameter.
-                      children: [
-                        // A SlidableAction can have an icon and/or a label.
-                        SlidableAction(
-                          onPressed: (value) {
-                            ref.read(assetUseCaseProvider).remove(asset!.id);
-                          },
-                          backgroundColor: const Color(0xFFFE4A49),
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
-                          label: 'Delete',
-                        ),
-                        SlidableAction(
-                          onPressed: (value) {},
-                          backgroundColor: const Color(0xFF21B7CA),
-                          foregroundColor: Colors.white,
-                          icon: Icons.edit,
-                          label: 'Edit',
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+            : Column(
+                children: [
+                  Text('${currentUserId.value}'),
+                  Flexible(
+                    child: ListView.builder(
+                      itemCount: assets.list.length,
+                      itemBuilder: (context, itemIndex) {
+                        final asset = assets.list[itemIndex];
+                        return Column(
                           children: [
-                            Stack(
-                              alignment: AlignmentDirectional.topStart,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(20)),
-                                  child: SizedBox(
-                                    height: 200,
-                                    child: Image.memory(asset!.image),
+                            Slidable(
+                              startActionPane: ActionPane(
+                                // A motion is a widget used to control how the pane animates.
+                                motion: const ScrollMotion(),
+                                // All actions are defined in the children parameter.
+                                children: [
+                                  // A SlidableAction can have an icon and/or a label.
+                                  SlidableAction(
+                                    onPressed: (value) {
+                                      ref
+                                          .read(assetUseCaseProvider)
+                                          .remove(asset!.id);
+                                    },
+                                    backgroundColor: const Color(0xFFFE4A49),
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete,
+                                    label: 'Delete',
                                   ),
-                                ),
-                                Positioned(
-                                  top: 10,
-                                  left: 10,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
+                                  SlidableAction(
+                                    onPressed: (value) {},
+                                    backgroundColor: const Color(0xFF21B7CA),
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.edit,
+                                    label: 'Edit',
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ClipRRect(
                                       borderRadius: const BorderRadius.all(
-                                          Radius.circular(10)),
-                                      color: Colors.white.withOpacity(0.5),
+                                          Radius.circular(20)),
+                                      child: SizedBox(
+                                        child: Container(
+                                          width: 150,
+                                          height: 150,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: Image.memory(asset!.image)
+                                                  .image,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                    child: Text(
-                                      asset.name.assetName,
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  right: 10,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(10)),
-                                      color: Colors.white.withOpacity(0.5),
-                                    ),
-                                    child: Text(
-                                        '残りの金額：${costFormat.format(asset.balanceAtNow().amount)}円'),
-                                  ),
-                                ),
-                              ],
+                                    Container(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('名前：${asset.name.assetName}'),
+                                          Text(
+                                              '元の金額：${costFormat.format(asset.cost.amount)}円'),
+                                          Text(
+                                              '残りの金額：${costFormat.format(asset.balanceAtNow().amount)}円'),
+                                          TextForPeriod(
+                                            year: asset.period.year,
+                                            month: asset.period.month,
+                                            day: asset.period.day,
+                                          ),
+                                          Text(
+                                              '購入日：${dateFormat.format(asset.purchaseDate)}'),
+                                        ],
+                                      ),
+                                    )
+                                  ]),
                             ),
-                            Text(
-                                '元の金額：${costFormat.format(asset.cost.amount)}'),
-                            Text(
-                                '償却期間：${asset.period.year}年${asset.period.month}月${asset.period.day}日'),
-                            Text(
-                                '購入日：${dateFormat.format(asset.purchaseDate)}'),
+                            const Divider(
+                              thickness: 1,
+                            )
                           ],
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
       ),
     );
+  }
+}
+
+class TextForPeriod extends StatelessWidget {
+  const TextForPeriod({
+    Key? key,
+    required this.year,
+    required this.month,
+    required this.day,
+  }) : super(key: key);
+
+  final int year;
+  final int month;
+  final int day;
+
+  @override
+  Widget build(BuildContext context) {
+    String yearText = '';
+    String monthText = '';
+    String dayText = '';
+    if (year != 0) {
+      yearText = '$year年';
+    }
+    if (month != 0) {
+      monthText = '$monthヶ月';
+    }
+    if (day != 0) {
+      dayText = '$day日';
+    }
+    return Text('償却期間：$yearText$monthText$dayText');
   }
 }

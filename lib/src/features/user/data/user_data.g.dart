@@ -6,22 +6,23 @@ part of 'user_data.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings
 
 extension GetUserDataCollection on Isar {
-  IsarCollection<UserData> get userDatas => getCollection();
+  IsarCollection<UserData> get userDatas => collection();
 }
 
 const UserDataSchema = CollectionSchema(
-  name: 'UserData',
+  name: r'UserData',
   schema:
-      '{"name":"UserData","idName":"id","properties":[{"name":"createDateTime","type":"Long"},{"name":"name","type":"String"},{"name":"payBackAmount","type":"Double"},{"name":"sumAmount","type":"Double"}],"indexes":[],"links":[]}',
-  idName: 'id',
+      r'{"name":"UserData","idName":"id","properties":[{"name":"createDateTime","type":"Long"},{"name":"name","type":"String"},{"name":"payBackAmount","type":"Double"},{"name":"sumAmount","type":"Double"}],"indexes":[],"links":[]}',
+  idName: r'id',
   propertyIds: {
-    'createDateTime': 0,
-    'name': 1,
-    'payBackAmount': 2,
-    'sumAmount': 3
+    r'createDateTime': 0,
+    r'name': 1,
+    r'payBackAmount': 2,
+    r'sumAmount': 3
   },
   listProperties: {},
   indexIds: {},
@@ -38,7 +39,7 @@ const UserDataSchema = CollectionSchema(
   serializeWeb: _userDataSerializeWeb,
   deserializeWeb: _userDataDeserializeWeb,
   deserializePropWeb: _userDataDeserializePropWeb,
-  version: 3,
+  version: 4,
 );
 
 int? _userDataGetId(UserData object) {
@@ -53,37 +54,29 @@ void _userDataSetId(UserData object, int id) {
   object.id = id;
 }
 
-List<IsarLinkBase> _userDataGetLinks(UserData object) {
+List<IsarLinkBase<dynamic>> _userDataGetLinks(UserData object) {
   return [];
 }
 
 void _userDataSerializeNative(
     IsarCollection<UserData> collection,
-    IsarRawObject rawObj,
+    IsarCObject cObj,
     UserData object,
     int staticSize,
     List<int> offsets,
     AdapterAlloc alloc) {
-  var dynamicSize = 0;
-  final value0 = object.createDateTime;
-  final _createDateTime = value0;
-  final value1 = object.name;
-  final _name = IsarBinaryWriter.utf8Encoder.convert(value1);
-  dynamicSize += (_name.length) as int;
-  final value2 = object.payBackAmount;
-  final _payBackAmount = value2;
-  final value3 = object.sumAmount;
-  final _sumAmount = value3;
-  final size = staticSize + dynamicSize;
+  final name$Bytes = IsarBinaryWriter.utf8Encoder.convert(object.name);
+  final size = (staticSize + 3 + (name$Bytes.length)) as int;
+  cObj.buffer = alloc(size);
+  cObj.buffer_length = size;
 
-  rawObj.buffer = alloc(size);
-  rawObj.buffer_length = size;
-  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final buffer = IsarNative.bufAsBytes(cObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeDateTime(offsets[0], _createDateTime);
-  writer.writeBytes(offsets[1], _name);
-  writer.writeDouble(offsets[2], _payBackAmount);
-  writer.writeDouble(offsets[3], _sumAmount);
+  writer.writeHeader();
+  writer.writeDateTime(offsets[0], object.createDateTime);
+  writer.writeByteList(offsets[1], name$Bytes);
+  writer.writeDouble(offsets[2], object.payBackAmount);
+  writer.writeDouble(offsets[3], object.sumAmount);
 }
 
 UserData _userDataDeserializeNative(IsarCollection<UserData> collection, int id,
@@ -111,112 +104,124 @@ P _userDataDeserializePropNative<P>(
     case 3:
       return (reader.readDouble(offset)) as P;
     default:
-      throw 'Illegal propertyIndex';
+      throw IsarError('Illegal propertyIndex');
   }
 }
 
-dynamic _userDataSerializeWeb(
+Object _userDataSerializeWeb(
     IsarCollection<UserData> collection, UserData object) {
   final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'createDateTime',
+  IsarNative.jsObjectSet(jsObj, r'createDateTime',
       object.createDateTime.toUtc().millisecondsSinceEpoch);
-  IsarNative.jsObjectSet(jsObj, 'id', object.id);
-  IsarNative.jsObjectSet(jsObj, 'name', object.name);
-  IsarNative.jsObjectSet(jsObj, 'payBackAmount', object.payBackAmount);
-  IsarNative.jsObjectSet(jsObj, 'sumAmount', object.sumAmount);
+  IsarNative.jsObjectSet(jsObj, r'id', object.id);
+  IsarNative.jsObjectSet(jsObj, r'name', object.name);
+  IsarNative.jsObjectSet(jsObj, r'payBackAmount', object.payBackAmount);
+  IsarNative.jsObjectSet(jsObj, r'sumAmount', object.sumAmount);
   return jsObj;
 }
 
 UserData _userDataDeserializeWeb(
-    IsarCollection<UserData> collection, dynamic jsObj) {
+    IsarCollection<UserData> collection, Object jsObj) {
   final object = UserData();
   object.createDateTime =
-      IsarNative.jsObjectGet(jsObj, 'createDateTime') != null
+      IsarNative.jsObjectGet(jsObj, r'createDateTime') != null
           ? DateTime.fromMillisecondsSinceEpoch(
-                  IsarNative.jsObjectGet(jsObj, 'createDateTime'),
+                  IsarNative.jsObjectGet(jsObj, r'createDateTime') as int,
                   isUtc: true)
               .toLocal()
           : DateTime.fromMillisecondsSinceEpoch(0);
-  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-  object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
-  object.payBackAmount =
-      IsarNative.jsObjectGet(jsObj, 'payBackAmount') ?? double.negativeInfinity;
+  object.id = IsarNative.jsObjectGet(jsObj, r'id');
+  object.name = IsarNative.jsObjectGet(jsObj, r'name') ?? '';
+  object.payBackAmount = IsarNative.jsObjectGet(jsObj, r'payBackAmount') ??
+      double.negativeInfinity;
   object.sumAmount =
-      IsarNative.jsObjectGet(jsObj, 'sumAmount') ?? double.negativeInfinity;
+      IsarNative.jsObjectGet(jsObj, r'sumAmount') ?? double.negativeInfinity;
   return object;
 }
 
 P _userDataDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
-    case 'createDateTime':
-      return (IsarNative.jsObjectGet(jsObj, 'createDateTime') != null
+    case r'createDateTime':
+      return (IsarNative.jsObjectGet(jsObj, r'createDateTime') != null
           ? DateTime.fromMillisecondsSinceEpoch(
-                  IsarNative.jsObjectGet(jsObj, 'createDateTime'),
+                  IsarNative.jsObjectGet(jsObj, r'createDateTime') as int,
                   isUtc: true)
               .toLocal()
           : DateTime.fromMillisecondsSinceEpoch(0)) as P;
-    case 'id':
-      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-          as P;
-    case 'name':
-      return (IsarNative.jsObjectGet(jsObj, 'name') ?? '') as P;
-    case 'payBackAmount':
-      return (IsarNative.jsObjectGet(jsObj, 'payBackAmount') ??
+    case r'id':
+      return (IsarNative.jsObjectGet(jsObj, r'id')) as P;
+    case r'name':
+      return (IsarNative.jsObjectGet(jsObj, r'name') ?? '') as P;
+    case r'payBackAmount':
+      return (IsarNative.jsObjectGet(jsObj, r'payBackAmount') ??
           double.negativeInfinity) as P;
-    case 'sumAmount':
-      return (IsarNative.jsObjectGet(jsObj, 'sumAmount') ??
+    case r'sumAmount':
+      return (IsarNative.jsObjectGet(jsObj, r'sumAmount') ??
           double.negativeInfinity) as P;
     default:
-      throw 'Illegal propertyName';
+      throw IsarError('Illegal propertyName');
   }
 }
 
-void _userDataAttachLinks(IsarCollection col, int id, UserData object) {}
+void _userDataAttachLinks(
+    IsarCollection<dynamic> col, int id, UserData object) {}
 
 extension UserDataQueryWhereSort on QueryBuilder<UserData, UserData, QWhere> {
   QueryBuilder<UserData, UserData, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const IdWhereClause.any());
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
   }
 }
 
 extension UserDataQueryWhere on QueryBuilder<UserData, UserData, QWhereClause> {
   QueryBuilder<UserData, UserData, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: id,
-      includeLower: true,
-      upper: id,
-      includeUpper: true,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterWhereClause> idNotEqualTo(int id) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      );
-    } else {
-      return addWhereClauseInternal(
-        IdWhereClause.greaterThan(lower: id, includeLower: false),
-      ).addWhereClauseInternal(
-        IdWhereClause.lessThan(upper: id, includeUpper: false),
-      );
-    }
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterWhereClause> idGreaterThan(int id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.greaterThan(lower: id, includeLower: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterWhereClause> idLessThan(int id,
       {bool include = false}) {
-    return addWhereClauseInternal(
-      IdWhereClause.lessThan(upper: id, includeUpper: include),
-    );
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterWhereClause> idBetween(
@@ -225,12 +230,14 @@ extension UserDataQueryWhere on QueryBuilder<UserData, UserData, QWhereClause> {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(IdWhereClause.between(
-      lower: lowerId,
-      includeLower: includeLower,
-      upper: upperId,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 }
 
@@ -238,11 +245,12 @@ extension UserDataQueryFilter
     on QueryBuilder<UserData, UserData, QFilterCondition> {
   QueryBuilder<UserData, UserData, QAfterFilterCondition> createDateTimeEqualTo(
       DateTime value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'createDateTime',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'createDateTime',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition>
@@ -250,12 +258,13 @@ extension UserDataQueryFilter
     DateTime value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'createDateTime',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'createDateTime',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition>
@@ -263,12 +272,13 @@ extension UserDataQueryFilter
     DateTime value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'createDateTime',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'createDateTime',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> createDateTimeBetween(
@@ -277,45 +287,58 @@ extension UserDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'createDateTime',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'createDateTime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserData, UserData, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> idEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> idGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> idLessThan(
     int value, {
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> idBetween(
@@ -324,25 +347,28 @@ extension UserDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameGreaterThan(
@@ -350,13 +376,14 @@ extension UserDataQueryFilter
     bool caseSensitive = true,
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameLessThan(
@@ -364,13 +391,14 @@ extension UserDataQueryFilter
     bool caseSensitive = true,
     bool include = false,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameBetween(
@@ -380,122 +408,132 @@ extension UserDataQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'name',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'name',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameContains(
       String value,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'name',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> nameMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'name',
-      value: pattern,
-      caseSensitive: caseSensitive,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'name',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition>
       payBackAmountGreaterThan(double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: false,
-      property: 'payBackAmount',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'payBackAmount',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> payBackAmountLessThan(
       double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: false,
-      property: 'payBackAmount',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        property: r'payBackAmount',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> payBackAmountBetween(
       double lower, double upper) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'payBackAmount',
-      lower: lower,
-      includeLower: false,
-      upper: upper,
-      includeUpper: false,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'payBackAmount',
+        lower: lower,
+        includeLower: false,
+        upper: upper,
+        includeUpper: false,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> sumAmountGreaterThan(
       double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: false,
-      property: 'sumAmount',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'sumAmount',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> sumAmountLessThan(
       double value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: false,
-      property: 'sumAmount',
-      value: value,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        property: r'sumAmount',
+        value: value,
+      ));
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterFilterCondition> sumAmountBetween(
       double lower, double upper) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'sumAmount',
-      lower: lower,
-      includeLower: false,
-      upper: upper,
-      includeUpper: false,
-    ));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sumAmount',
+        lower: lower,
+        includeLower: false,
+        upper: upper,
+        includeUpper: false,
+      ));
+    });
   }
 }
 
@@ -505,132 +543,174 @@ extension UserDataQueryLinks
 extension UserDataQueryWhereSortBy
     on QueryBuilder<UserData, UserData, QSortBy> {
   QueryBuilder<UserData, UserData, QAfterSortBy> sortByCreateDateTime() {
-    return addSortByInternal('createDateTime', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createDateTime', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> sortByCreateDateTimeDesc() {
-    return addSortByInternal('createDateTime', Sort.desc);
-  }
-
-  QueryBuilder<UserData, UserData, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<UserData, UserData, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createDateTime', Sort.desc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> sortByName() {
-    return addSortByInternal('name', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> sortByNameDesc() {
-    return addSortByInternal('name', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> sortByPayBackAmount() {
-    return addSortByInternal('payBackAmount', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'payBackAmount', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> sortByPayBackAmountDesc() {
-    return addSortByInternal('payBackAmount', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'payBackAmount', Sort.desc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> sortBySumAmount() {
-    return addSortByInternal('sumAmount', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sumAmount', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> sortBySumAmountDesc() {
-    return addSortByInternal('sumAmount', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sumAmount', Sort.desc);
+    });
   }
 }
 
 extension UserDataQueryWhereSortThenBy
     on QueryBuilder<UserData, UserData, QSortThenBy> {
   QueryBuilder<UserData, UserData, QAfterSortBy> thenByCreateDateTime() {
-    return addSortByInternal('createDateTime', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createDateTime', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenByCreateDateTimeDesc() {
-    return addSortByInternal('createDateTime', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createDateTime', Sort.desc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenByName() {
-    return addSortByInternal('name', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenByNameDesc() {
-    return addSortByInternal('name', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenByPayBackAmount() {
-    return addSortByInternal('payBackAmount', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'payBackAmount', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenByPayBackAmountDesc() {
-    return addSortByInternal('payBackAmount', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'payBackAmount', Sort.desc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenBySumAmount() {
-    return addSortByInternal('sumAmount', Sort.asc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sumAmount', Sort.asc);
+    });
   }
 
   QueryBuilder<UserData, UserData, QAfterSortBy> thenBySumAmountDesc() {
-    return addSortByInternal('sumAmount', Sort.desc);
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sumAmount', Sort.desc);
+    });
   }
 }
 
 extension UserDataQueryWhereDistinct
     on QueryBuilder<UserData, UserData, QDistinct> {
   QueryBuilder<UserData, UserData, QDistinct> distinctByCreateDateTime() {
-    return addDistinctByInternal('createDateTime');
-  }
-
-  QueryBuilder<UserData, UserData, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createDateTime');
+    });
   }
 
   QueryBuilder<UserData, UserData, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
-    return addDistinctByInternal('name', caseSensitive: caseSensitive);
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
   }
 
   QueryBuilder<UserData, UserData, QDistinct> distinctByPayBackAmount() {
-    return addDistinctByInternal('payBackAmount');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'payBackAmount');
+    });
   }
 
   QueryBuilder<UserData, UserData, QDistinct> distinctBySumAmount() {
-    return addDistinctByInternal('sumAmount');
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sumAmount');
+    });
   }
 }
 
 extension UserDataQueryProperty
     on QueryBuilder<UserData, UserData, QQueryProperty> {
-  QueryBuilder<UserData, DateTime, QQueryOperations> createDateTimeProperty() {
-    return addPropertyNameInternal('createDateTime');
+  QueryBuilder<UserData, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
   }
 
-  QueryBuilder<UserData, int, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+  QueryBuilder<UserData, DateTime, QQueryOperations> createDateTimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createDateTime');
+    });
   }
 
   QueryBuilder<UserData, String, QQueryOperations> nameProperty() {
-    return addPropertyNameInternal('name');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
+    });
   }
 
   QueryBuilder<UserData, double, QQueryOperations> payBackAmountProperty() {
-    return addPropertyNameInternal('payBackAmount');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'payBackAmount');
+    });
   }
 
   QueryBuilder<UserData, double, QQueryOperations> sumAmountProperty() {
-    return addPropertyNameInternal('sumAmount');
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sumAmount');
+    });
   }
 }

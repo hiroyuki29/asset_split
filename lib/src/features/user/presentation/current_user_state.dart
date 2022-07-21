@@ -1,7 +1,6 @@
 import 'package:asset_split/src/features/user/use_case/user_use_case.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../data/current_user_repository_impl.dart';
+import '../domain/current_user_repository.dart';
 import '../domain/model/user.dart';
 import '../domain/value/user_name.dart';
 
@@ -46,5 +45,11 @@ class CurrentUserState extends StateNotifier<AsyncValue<int>> {
     );
     int newUserId = await userUseCase.add(newUser);
     state = AsyncValue.data(newUserId);
+  }
+
+  Future<void> remove(int userId) async {
+    state = const AsyncLoading();
+    int nextUserId = await userUseCase.remove(userId) ?? 0;
+    state = AsyncValue.data(nextUserId);
   }
 }

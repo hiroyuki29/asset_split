@@ -1,29 +1,9 @@
 import 'dart:async';
 import 'dart:typed_data';
-
-import 'package:asset_split/src/features/asset/data/asset_isar_provider.dart';
 import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
 import 'package:asset_split/src/features/asset/domain/local_asset_repository.dart';
 import 'package:asset_split/src/features/asset/domain/model/asset.dart';
-import 'package:asset_split/src/features/user/data/current_user_repository_impl.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
-
-final assetRepositoryProvider = Provider<AssetRepository>((ref) {
-  final userIdAsyncValue = ref.watch(currentUserIdProvider);
-  var userId = userIdAsyncValue.value;
-  if (userId != null) {
-    return AssetRepositoryImpl(isar: ref.watch(isarProvider), userId: userId);
-  } else {
-    return AssetRepositoryImpl(isar: ref.watch(isarProvider), userId: 0);
-  }
-});
-
-final assetListStreamProvider = StreamProvider.autoDispose<AssetList>((ref) {
-  final assetRepository = ref.watch(assetRepositoryProvider);
-  assetRepository.watchAssets();
-  return assetRepository.assetDataStream;
-});
 
 class AssetRepositoryImpl implements AssetRepository {
   AssetRepositoryImpl({required this.isar, required this.userId}) {
@@ -92,14 +72,14 @@ class AssetRepositoryImpl implements AssetRepository {
       ..period = asset.period.amountList
       ..purchaseDate = asset.purchaseDate
       ..repayment = asset.repayment.amount;
-    await isar.writeTxn((isar) async {
+    await isar.writeTxn(() async {
       await isar.assetDatas.put(newAssetData);
     });
   }
 
   @override
   Future<void> removeAsset(int assetId) async {
-    await isar.writeTxn((isar) async {
+    await isar.writeTxn(() async {
       return isar.assetDatas.delete(assetId);
     });
   }
@@ -132,7 +112,7 @@ class AssetRepositoryImpl implements AssetRepository {
       ..purchaseDate = purchaseDate
       ..repayment = repayment;
 
-    isar.writeTxn((isar) async {
+    isar.writeTxn(() async {
       await isar.assetDatas.put(assetData);
     });
   }

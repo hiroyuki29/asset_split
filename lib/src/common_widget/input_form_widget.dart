@@ -26,9 +26,9 @@ class InputFormWidget extends StatefulWidget {
 class _InputFormWidgetState extends State<InputFormWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 70,
-      padding: const EdgeInsets.all(8),
+    return SizedBox(
+      height: 60,
+      // padding: const EdgeInsets.all(5),
       child: KeyboardActions(
         config: buildConfig(context),
         child: Center(
@@ -56,7 +56,7 @@ class _InputFormWidgetState extends State<InputFormWidget> {
             return GestureDetector(
               onTap: () => node.unfocus(),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(5.0),
                 child: Row(
                   children: const [
                     Text(

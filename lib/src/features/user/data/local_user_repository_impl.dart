@@ -1,23 +1,10 @@
 import 'dart:async';
-
+import 'package:asset_split/src/features/asset/data/collections/asset_data.dart';
 import 'package:asset_split/src/features/user/data/user_data.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../asset/data/asset_isar_provider.dart';
 import '../domain/local_user_repository.dart';
 import '../domain/model/user.dart';
-
-final userRepositoryProvider = Provider<UserRepository>((ref) {
-  return UserRepositoryImpl(ref.watch(isarProvider));
-});
-
-final userListStreamProvider = StreamProvider<List<User>>((ref) {
-  final userRepository = ref.watch(userRepositoryProvider);
-  userRepository.watchUsers();
-  return userRepository.userDataStream;
-});
 
 class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this.isar) {
@@ -57,10 +44,19 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> removeUser(int userId) async {
-    await isar.writeTxn((isar) async {
-      return isar.userDatas.delete(userId);
+  Future<int?> removeUser(int userId) async {
+    int? nextUserId = await isar.writeTxn(() async {
+      final assetsOfDeleteUser = await isar.assetDatas
+          .filter()
+          .userIdEqualTo(userId)
+          .idProperty()
+          .findAll();
+      isar.assetDatas.deleteAll(assetsOfDeleteUser);
+      await isar.userDatas.delete(userId);
+      int? nextUserId = await isar.userDatas.where().idProperty().findFirst();
+      return nextUserId;
     });
+    return nextUserId;
   }
 
   @override
@@ -70,7 +66,7 @@ class UserRepositoryImpl implements UserRepository {
       ..createDateTime = user.createDateTime
       ..sumAmount = user.sumAmount.amount
       ..payBackAmount = user.payBackAmount.amount;
-    int currentUserId = await isar.writeTxn((isar) async {
+    int currentUserId = await isar.writeTxn(() async {
       return await isar.userDatas.put(newUserData);
     });
     return currentUserId;
@@ -96,7 +92,7 @@ class UserRepositoryImpl implements UserRepository {
       ..createDateTime = createDateTime
       ..sumAmount = sumAmount
       ..payBackAmount = payBackAmount;
-    isar.writeTxn((isar) async {
+    isar.writeTxn(() async {
       await isar.userDatas.put(userData);
     });
   }

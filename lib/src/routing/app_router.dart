@@ -1,11 +1,12 @@
+import 'package:asset_split/src/features/asset/domain/local_asset_repository.dart';
 import 'package:asset_split/src/features/asset/presentation/add_new_asset_screen.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_home_screen.dart';
 import 'package:asset_split/src/features/asset/presentation/asset_list_screen.dart';
-import 'package:asset_split/src/features/user/data/local_user_repository_impl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../common_widget/loading_screen.dart';
+import '../features/asset/domain/model/asset.dart';
+import '../features/user/domain/local_user_repository.dart';
 import '../features/user/domain/model/user.dart';
 import '../features/user/presentation/user_list_screen.dart';
 
@@ -18,9 +19,10 @@ enum AppRoute {
 
 final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
   final AsyncValue<List<User>> userState = ref.watch(userListStreamProvider);
+  final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
   return GoRouter(
     initialLocation: '/',
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
     redirect: (state) {
       if (userState.value == null) {
         if (state.location == '/') {
@@ -32,12 +34,22 @@ final goRouterProvider = Provider.autoDispose<GoRouter>((ref) {
           if (state.location == '/' || state.location == '/assets') {
             return '/users';
           }
+        } else {
+          if (assetList.value == null) {
+            if (state.location == '/') {
+              return '/loading';
+            }
+          }
+          if (assetList.value!.list.isEmpty) {
+            if (state.location == '/') {
+              return '/assets';
+            }
+          }
         }
       }
       return null;
     },
-    // refreshListenable:
-    //     GoRouterRefreshStream(ref.watch(userStateProvider.notifier).stream),
+    // refreshListenable: GoRouterRefreshStream(currentUserId.currentUserId()),
     routes: [
       GoRoute(
         path: '/',
