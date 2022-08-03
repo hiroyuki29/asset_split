@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common_widget/async_value_widget.dart';
 import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
+import '../../user/domain/model/user.dart';
 import '../../user/domain/value/money_amount.dart';
 import '../domain/local_asset_repository.dart';
 import '../domain/model/asset.dart';
@@ -24,7 +25,7 @@ class _AssetHomeScreenState extends ConsumerState<AssetHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<int> currentUserId = ref.watch(currentUserStateProvider);
+    final AsyncValue<User?> currentUserId = ref.watch(currentUserStateProvider);
     final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
 
     return Scaffold(

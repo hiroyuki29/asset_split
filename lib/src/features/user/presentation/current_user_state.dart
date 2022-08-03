@@ -1,55 +1,61 @@
 import 'package:asset_split/src/features/user/use_case/user_use_case.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../domain/current_user_repository.dart';
+import '../domain/local_user_repository.dart';
 import '../domain/model/user.dart';
 import '../domain/value/user_name.dart';
 
 final currentUserStateProvider =
-    StateNotifierProvider.autoDispose<CurrentUserState, AsyncValue<int>>((ref) {
+    StateNotifierProvider.autoDispose<CurrentUserState, AsyncValue<User?>>(
+        (ref) {
   final userState = CurrentUserState(
     userUseCase: ref.watch(userUseCaseProvider),
   );
-  ref.listen<AsyncValue<int>>(currentUserIdProvider, ((previous, next) {
-    userState.stateChange(next.value!);
+  ref.listen<AsyncValue<User>>(currentUserStreamProvider, ((previous, next) {
+    userState.stateChangeFromStream(next.value!);
   }));
   return userState;
 });
 
-class CurrentUserState extends StateNotifier<AsyncValue<int>> {
+class CurrentUserState extends StateNotifier<AsyncValue<User?>> {
   CurrentUserState({
     required this.userUseCase,
-  }) : super(const AsyncData(0)) {
+  }) : super(const AsyncData(null)) {
     _readPref();
   }
 
   final UserUseCase userUseCase;
 
   void _readPref() async {
-    state = AsyncValue.data(await userUseCase.fetchCurrentUserId());
+    state = AsyncValue.data(await userUseCase.fetchCurrentUser());
   }
 
-  void stateChange(int userId) {
-    state = AsyncValue.data(userId);
+  void stateChangeFromStream(User user) {
+    state = AsyncValue.data(user);
   }
 
-  void changeCurrentUser(int userId) async {
-    await userUseCase.select(userId);
-    state = AsyncValue.data(userId);
+  void stateChange(User user) {
+    userUseCase.select(user);
+    state = AsyncData(user);
   }
+
+  // void changeCurrentUser(User user) async {
+  //   await userUseCase.select(userId);
+  //   state = AsyncValue.data(userId);
+  // }
 
   Future<void> addNewUser({
     required UserName name,
   }) async {
-    User newUser = User.initCreate(
+    User setUser = User.initCreate(
       name: name,
     );
-    int newUserId = await userUseCase.add(newUser);
-    state = AsyncValue.data(newUserId);
+    User newUser = await userUseCase.add(setUser);
+    state = AsyncValue.data(newUser);
   }
 
-  Future<void> remove(int userId) async {
+  Future<void> remove(User user) async {
     state = const AsyncLoading();
-    int nextUserId = await userUseCase.remove(userId) ?? 0;
-    state = AsyncValue.data(nextUserId);
+    User? nextUser = await userUseCase.remove(user);
+    state = AsyncValue.data(nextUser);
   }
 }

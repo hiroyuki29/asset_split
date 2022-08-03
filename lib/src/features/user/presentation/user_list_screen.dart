@@ -59,7 +59,7 @@ class UserListScreen extends ConsumerWidget {
                         onTap: () {
                           ref
                               .read(currentUserStateProvider.notifier)
-                              .changeCurrentUser(user.id);
+                              .stateChange(user);
                           context.goNamed(AppRoute.home.name);
                         },
                         child: Slidable(
@@ -73,7 +73,7 @@ class UserListScreen extends ConsumerWidget {
                                 onPressed: (value) {
                                   ref
                                       .read(currentUserStateProvider.notifier)
-                                      .remove(user.id);
+                                      .remove(user);
                                 },
                                 backgroundColor: const Color(0xFFFE4A49),
                                 foregroundColor: Colors.white,

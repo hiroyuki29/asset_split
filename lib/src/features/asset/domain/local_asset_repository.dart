@@ -1,15 +1,15 @@
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../user/domain/current_user_repository.dart';
+import '../../user/domain/local_user_repository.dart';
 import '../data/asset_isar_provider.dart';
 import '../data/local_asset_repository_impl.dart';
 import 'model/asset.dart';
 
 final assetRepositoryProvider = Provider<AssetRepository>((ref) {
-  final userIdAsyncValue = ref.watch(currentUserIdProvider);
-  var userId = userIdAsyncValue.value;
-  if (userId != null) {
-    return AssetRepositoryImpl(isar: ref.watch(isarProvider), userId: userId);
+  final userAsyncValue = ref.watch(currentUserStreamProvider);
+  var user = userAsyncValue.value;
+  if (user != null) {
+    return AssetRepositoryImpl(isar: ref.watch(isarProvider), userId: user.id);
   } else {
     return AssetRepositoryImpl(isar: ref.watch(isarProvider), userId: 0);
   }

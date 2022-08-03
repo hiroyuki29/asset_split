@@ -41,7 +41,7 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = ref.watch(currentUserStateProvider).value;
+    final currentUser = ref.watch(currentUserStateProvider);
     return Container(
       color: const Color(0xff757575),
       child: Container(
@@ -228,8 +228,12 @@ class AddNewAssetScreenState extends ConsumerState<AddNewAssetScreen> {
                   if (years == 0 && months == 0 && days == 0) {
                     throw Exception('period error');
                   }
+                  int currentUserId = 0;
+                  if (currentUser.value != null) {
+                    currentUserId = currentUser.value!.id;
+                  }
                   ref.read(assetUseCaseProvider).add(
-                        userId: currentUserId ?? 0,
+                        userId: currentUserId,
                         name: AssetName(assetName: nameController.text),
                         image: image!,
                         cost: Money(double.tryParse(costController.text)!),

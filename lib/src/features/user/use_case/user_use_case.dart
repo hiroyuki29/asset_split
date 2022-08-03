@@ -1,8 +1,5 @@
-import 'package:asset_split/src/features/user/data/current_user_repository_impl.dart';
-import 'package:asset_split/src/features/user/domain/current_user_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/local_user_repository_impl.dart';
 import '../domain/local_user_repository.dart';
 import '../domain/model/user.dart';
 import '../domain/value/money_amount.dart';
@@ -12,28 +9,30 @@ final userUseCaseProvider = Provider<UserUseCase>(
   (ref) {
     return UserUseCase(
       userRepository: ref.watch(userRepositoryProvider),
-      currentUserRepository: ref.watch(currentUserRepositoryProvider),
+      // currentUserRepository: ref.watch(currentUserRepositoryProvider),
     );
   },
 );
 
 class UserUseCase {
-  UserUseCase(
-      {required this.userRepository, required this.currentUserRepository});
+  UserUseCase({
+    required this.userRepository,
+    // required this.currentUserRepository,
+  });
 
   final UserRepository userRepository;
-  final CurrentUserRepository currentUserRepository;
+  // final CurrentUserRepository currentUserRepository;
 
   Future<List<User>> fetchUsers() async {
     return await userRepository.fetchUsers();
   }
 
-  Future<void> select(int userId) async {
-    await currentUserRepository.select(userId);
+  Future<void> select(User user) async {
+    await userRepository.select(user);
   }
 
-  Future<int> fetchCurrentUserId() async {
-    return await currentUserRepository.fetchCurrentUser();
+  Future<User?> fetchCurrentUser() async {
+    return await userRepository.fetchCurrentUser();
   }
 
   Future<User?> fetchOneUser(int userId) async {
@@ -41,16 +40,19 @@ class UserUseCase {
     return user;
   }
 
-  Future<int> add(User newUser) async {
-    int newUserId = await userRepository.setUser(newUser);
-    await currentUserRepository.select(newUserId);
-    return newUserId;
+  Future<User> add(User setUser) async {
+    User newUser = await userRepository.setUser(setUser);
+    await userRepository.select(newUser);
+    return newUser;
   }
 
-  Future<int?> remove(int userId) async {
-    int? nextUserId = await userRepository.removeUser(userId) ?? 0;
-    await currentUserRepository.select(nextUserId);
-    return nextUserId;
+  Future<User?> remove(User user) async {
+    User? nextUser = await userRepository.removeUser(user);
+    if (nextUser == null) {
+      return null;
+    }
+    await userRepository.select(nextUser);
+    return nextUser;
   }
 
   Future<void> addPayment({required User user, required Money add}) async {

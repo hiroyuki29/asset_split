@@ -20,9 +20,14 @@ class UserRepositoryImpl implements UserRepository {
   }
   final Isar isar;
   final _userDataStreamController = StreamController<List<User>>.broadcast();
+  final _currentUserDataStreamController = StreamController<User>.broadcast();
 
   @override
   Stream<List<User>> get userDataStream => _userDataStreamController.stream;
+
+  @override
+  Stream<User> get currentUserDataStream =>
+      _currentUserDataStreamController.stream;
 
   @override
   Future<List<User>> fetchUsers() async {
@@ -39,28 +44,43 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<User?> fetchCurrentUser() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    int? currentUserId = pref.getInt('currentUserId') ?? 0;
+    User? currentUser = await fetchOneUser(currentUserId);
+    if (currentUser == null) {
+      return null;
+    }
+    _currentUserDataStreamController.sink.add(currentUser);
+    return currentUser;
+  }
+
+  @override
   Future<void> watchUsers() async {
     _userDataStreamController.sink.add(await fetchUsers());
   }
 
   @override
-  Future<int?> removeUser(int userId) async {
-    int? nextUserId = await isar.writeTxn(() async {
+  Future<User?> removeUser(User user) async {
+    await isar.writeTxn(() async {
       final assetsOfDeleteUser = await isar.assetDatas
           .filter()
-          .userIdEqualTo(userId)
+          .userIdEqualTo(user.id)
           .idProperty()
           .findAll();
       isar.assetDatas.deleteAll(assetsOfDeleteUser);
-      await isar.userDatas.delete(userId);
-      int? nextUserId = await isar.userDatas.where().idProperty().findFirst();
-      return nextUserId;
+      await isar.userDatas.delete(user.id);
     });
-    return nextUserId;
+    UserData? nextUserData = await isar.userDatas.where().findFirst();
+    if (nextUserData == null) {
+      return null;
+    }
+    User nextUser = User.fromUserData(nextUserData);
+    return nextUser;
   }
 
   @override
-  Future<int> setUser(User user) async {
+  Future<User> setUser(User user) async {
     final newUserData = UserData()
       ..name = user.name.name
       ..createDateTime = user.createDateTime
@@ -69,7 +89,8 @@ class UserRepositoryImpl implements UserRepository {
     int currentUserId = await isar.writeTxn(() async {
       return await isar.userDatas.put(newUserData);
     });
-    return currentUserId;
+    User? currentUser = await fetchOneUser(currentUserId);
+    return currentUser!;
   }
 
   @override
@@ -110,8 +131,9 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> select(int userId) async {
+  Future<void> select(User user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('currentUserId', userId);
+    await prefs.setInt('currentUserId', user.id);
+    _currentUserDataStreamController.sink.add(user);
   }
 }

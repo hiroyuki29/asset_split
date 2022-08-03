@@ -63,6 +63,9 @@ class Asset {
     DateTime finalDate = purchaseDate.add(
         Duration(days: period.year * 365 + period.month * 30 + period.day));
     int remainingDays = finalDate.difference(DateTime.now()).inDays + 1;
+    if (remainingDays <= 0) {
+      return 1;
+    }
     return remainingDays;
   }
 

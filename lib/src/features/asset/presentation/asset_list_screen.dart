@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../common_widget/bottom_navigation_common.dart';
 import '../../../constants.dart';
+import '../../user/domain/model/user.dart';
 import '../../user/presentation/current_user_state.dart';
 import '../domain/local_asset_repository.dart';
 import '../domain/model/asset.dart';
@@ -15,7 +16,7 @@ class AssetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<int> currentUserId = ref.watch(currentUserStateProvider);
+    final AsyncValue<User?> currentUser = ref.watch(currentUserStateProvider);
     final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
 
     return Scaffold(
@@ -51,7 +52,7 @@ class AssetListScreen extends ConsumerWidget {
               )
             : Column(
                 children: [
-                  Text('${currentUserId.value}'),
+                  Text('ユーザー名:${currentUser.value!.name.name}'),
                   Flexible(
                     child: ListView.builder(
                       itemCount: assets.list.length,
@@ -61,11 +62,8 @@ class AssetListScreen extends ConsumerWidget {
                           children: [
                             Slidable(
                               startActionPane: ActionPane(
-                                // A motion is a widget used to control how the pane animates.
                                 motion: const ScrollMotion(),
-                                // All actions are defined in the children parameter.
                                 children: [
-                                  // A SlidableAction can have an icon and/or a label.
                                   SlidableAction(
                                     onPressed: (value) {
                                       ref

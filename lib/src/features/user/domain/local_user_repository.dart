@@ -14,14 +14,22 @@ final userListStreamProvider = StreamProvider<List<User>>((ref) {
   return userRepository.userDataStream;
 });
 
+final currentUserStreamProvider = StreamProvider<User>((ref) {
+  final userRepository = ref.watch(userRepositoryProvider);
+  userRepository.fetchCurrentUser();
+  return userRepository.currentUserDataStream;
+});
+
 abstract class UserRepository {
   Stream<List<User>> get userDataStream;
+  Stream<User> get currentUserDataStream;
   Future<List<User>> fetchUsers();
-  Future<void> select(int userId);
+  Future<User?> fetchCurrentUser();
+  Future<void> select(User user);
   Future<User?> fetchOneUser(int userId);
   Future<void> watchUsers();
-  Future<int> setUser(User user);
-  Future<int?> removeUser(int userId);
+  Future<User> setUser(User user);
+  Future<User?> removeUser(User user);
   Future<void> updateUser({
     required int id,
     required String name,
