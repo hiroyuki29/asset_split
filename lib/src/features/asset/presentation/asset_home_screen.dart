@@ -25,12 +25,13 @@ class _AssetHomeScreenState extends ConsumerState<AssetHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<User?> currentUserId = ref.watch(currentUserStateProvider);
+    final AsyncValue<User?> currentUser = ref.watch(currentUserStateProvider);
     final AsyncValue<AssetList> assetList = ref.watch(assetListStreamProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$currentUserId'),
+        title:
+            Text(currentUser.value != null ? currentUser.value!.name.name : ''),
       ),
       bottomNavigationBar: const BottomNavigationCommon(),
       body: AsyncValueWidget<AssetList>(
